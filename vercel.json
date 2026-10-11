@@ -1,0 +1,18 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/api/riot/live-game",
+      "destination": "/api/riot/live-game"
+    },
+    {
+      "source": "/api/ai/analyze",
+      "destination": "/api/ai/analyze"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
