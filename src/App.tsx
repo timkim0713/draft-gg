@@ -6,6 +6,7 @@ import { fetchLiveGame, mapLiveGameToDraft } from './services/riotService';
 import { requestAICompAnalysis } from './services/aiService';
 import { Header } from './components/Header';
 import { DraftSlot } from './components/DraftSlot';
+import { QuickBriefingCard } from './components/QuickBriefingCard';
 import { WinRateBar } from './components/WinRateBar';
 import { TeamfightCard } from './components/TeamfightCard';
 import { StatsRadarOrBars } from './components/StatsRadarOrBars';
@@ -14,7 +15,7 @@ import { LaneMatchupsGrid } from './components/LaneMatchupsGrid';
 import { ChampionSelectModal } from './components/ChampionSelectModal';
 import { SettingsModal } from './components/SettingsModal';
 import { AICoachPanel } from './components/AICoachPanel';
-import { AlertCircle, CheckCircle, Radio } from 'lucide-react';
+import { AlertCircle, Radio, Zap, Layers } from 'lucide-react';
 
 const EMPTY_DRAFT: TeamDraft = {
   TOP: null,
@@ -28,6 +29,9 @@ export function App() {
   // Initialize with Preset 1
   const [blueDraft, setBlueDraft] = useState<TeamDraft>(PRESET_COMPS[0].blueDraft);
   const [redDraft, setRedDraft] = useState<TeamDraft>(PRESET_COMPS[0].redDraft);
+
+  // View Mode: 'quick' (1-Minute Loading Screen mode) vs 'detailed'
+  const [viewMode, setViewMode] = useState<'quick' | 'detailed'>('quick');
 
   // API Keys (saved in localStorage)
   const [riotApiKey, setRiotApiKey] = useState<string>(() => localStorage.getItem('lol_comp_riot_key') || '');
@@ -99,7 +103,6 @@ export function App() {
           type: 'success',
           message: `라이브 인게임 데이터 연동 완료: ${res.data.summonerQuery} (${res.data.gameMode})`
         });
-        // Run AI analysis on the fetched live draft
         triggerAIAnalysis(b, r);
       } else {
         setActiveLiveGame(null);
@@ -200,11 +203,11 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-5 space-y-4">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 space-y-3.5">
         {/* Live Game Status Banner */}
         {liveGameNotice && (
           <div
-            className={`px-4 py-2.5 rounded-lg border text-xs flex items-center justify-between transition-all ${
+            className={`px-3 py-2 rounded-lg border text-xs flex items-center justify-between transition-all ${
               liveGameNotice.type === 'success'
                 ? 'bg-[#12241d] border-[#1d4231] text-emerald-300'
                 : liveGameNotice.type === 'info'
@@ -222,19 +225,51 @@ export function App() {
             </div>
             <button
               onClick={() => setLiveGameNotice(null)}
-              className="text-gray-400 hover:text-white text-[11px] underline ml-2"
+              className="text-gray-400 hover:text-white text-[11px] underline ml-2 cursor-pointer"
             >
               닫기
             </button>
           </div>
         )}
 
-        {/* 5v5 Draft Pick Section (DeepLoL style) */}
-        <section className="bg-[#121620] border border-[#202738] rounded-xl p-3.5 sm:p-4 shadow-lg">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 relative">
+        {/* View Mode Toggle Bar */}
+        <div className="flex items-center justify-between bg-[#10141e] border border-[#1d2434] p-1.5 rounded-lg">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setViewMode('quick')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'quick'
+                  ? 'bg-[#4a72ff] text-white shadow-sm'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <Zap size={13} />
+              <span>1분 초간단 브리핑 (로딩창 추천)</span>
+            </button>
+            <button
+              onClick={() => setViewMode('detailed')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'detailed'
+                  ? 'bg-[#4a72ff] text-white shadow-sm'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <Layers size={13} />
+              <span>상세 분석 모드</span>
+            </button>
+          </div>
+
+          <span className="text-[11px] text-gray-500 hidden sm:inline mr-2">
+            {viewMode === 'quick' ? '게임 시작 전 핵심 3줄과 한타 결론만 표시' : '스탯 차트 및 심층 리포트 표시'}
+          </span>
+        </div>
+
+        {/* 5v5 Draft Pick Section */}
+        <section className="bg-[#121620] border border-[#202738] rounded-xl p-3 sm:p-3.5 shadow-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 relative">
             {/* Blue Team (Our Team) */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between border-b border-[#1c2333] pb-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between border-b border-[#1c2333] pb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded bg-[#4a72ff]" />
                   <span className="font-extrabold text-xs tracking-wider text-[#4a72ff]">
@@ -242,11 +277,9 @@ export function App() {
                   </span>
                   <span className="text-[11px] text-gray-400 font-medium">우리 팀</span>
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium">
-                  슬롯 클릭 시 챔피언 변경
-                </span>
+                <span className="text-[10px] text-gray-500">클릭하여 변경</span>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {roles.map(role => (
                   <DraftSlot
                     key={`blue-${role}`}
@@ -261,8 +294,8 @@ export function App() {
             </div>
 
             {/* Red Team (Enemy Team) */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between border-b border-[#29181f] pb-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between border-b border-[#29181f] pb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded bg-[#e0455f]" />
                   <span className="font-extrabold text-xs tracking-wider text-[#e0455f]">
@@ -270,11 +303,9 @@ export function App() {
                   </span>
                   <span className="text-[11px] text-gray-400 font-medium">상대 팀</span>
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium">
-                  슬롯 클릭 시 챔피언 변경
-                </span>
+                <span className="text-[10px] text-gray-500">클릭하여 변경</span>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {roles.map(role => (
                   <DraftSlot
                     key={`red-${role}`}
@@ -290,39 +321,42 @@ export function App() {
           </div>
         </section>
 
-        {/* AI LLM Coach Panel */}
-        <AICoachPanel
-          aiResult={aiResult}
-          isLoading={isAILoading}
-          onRefresh={() => triggerAIAnalysis(blueDraft, redDraft)}
-        />
-
-        {/* Dashboard 1: Overall Win Rate Bar */}
-        <WinRateBar analysis={analysis} />
-
-        {/* Dashboard 2: Teamfight Breakdown & Comparative Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <TeamfightCard analysis={analysis} />
-          <StatsRadarOrBars
-            blueStats={analysis.blueStats}
-            redStats={analysis.redStats}
+        {/* MODE A: 1-Minute Quick Briefing (Default) */}
+        {viewMode === 'quick' && (
+          <QuickBriefingCard
+            analysis={analysis}
+            aiResult={aiResult}
+            blueDraft={blueDraft}
+            redDraft={redDraft}
           />
-        </div>
+        )}
 
-        {/* Dashboard 3: Macro Roadmap (Early, Mid, Late) */}
-        <MacroWinConditionCard analysis={analysis} />
-
-        {/* Dashboard 4: Lane by Lane 1v1 Matchups */}
-        <LaneMatchupsGrid matchups={analysis.laneMatchups} />
+        {/* MODE B: Detailed Analysis View */}
+        {viewMode === 'detailed' && (
+          <div className="space-y-3.5">
+            <AICoachPanel
+              aiResult={aiResult}
+              isLoading={isAILoading}
+              onRefresh={() => triggerAIAnalysis(blueDraft, redDraft)}
+            />
+            <WinRateBar analysis={analysis} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+              <TeamfightCard analysis={analysis} />
+              <StatsRadarOrBars
+                blueStats={analysis.blueStats}
+                redStats={analysis.redStats}
+              />
+            </div>
+            <MacroWinConditionCard analysis={analysis} />
+            <LaneMatchupsGrid matchups={analysis.laneMatchups} />
+          </div>
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#1a2130] py-4 px-4 text-center text-[11px] text-gray-500 bg-[#0a0d14]">
+      <footer className="border-t border-[#1a2130] py-3 px-4 text-center text-[10px] text-gray-500 bg-[#0a0d14]">
         <p>
-          DeepLoL Comp AI - League of Legends 5:5 솔로랭크 픽창 및 라이브 인게임 분석 도구
-        </p>
-        <p className="mt-0.5 text-[10px] text-gray-600">
-          Riot Games Data Dragon & Spectator API 기반 (비공식 팬 도구)
+          DeepLoL Comp AI - 5:5 솔로랭크 픽창 및 인게임 초고속 1분 브리핑 도구
         </p>
       </footer>
 
