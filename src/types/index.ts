@@ -18,6 +18,7 @@ export interface ChampionStats {
 
 export interface Champion {
   id: string;            // DDragon ID e.g. "Aatrox"
+  key?: number;          // Riot Numeric Key e.g. 266
   name: string;          // English name
   nameKo: string;        // Korean name
   initials: string;      // 초성 e.g. "ㅇㅌㄹㅅ"
@@ -27,6 +28,44 @@ export interface Champion {
   stats: ChampionStats;
   tags: string[];        // Key tags e.g. ["하드 이니시", "단단한 앞라인"]
   keySkillsTip?: string; // 스킬 팁 e.g. "궁극기 이니시 주의"
+}
+
+export interface LiveGameParticipant {
+  summonerName: string;
+  riotId?: string;
+  teamId: number; // 100 for blue, 200 for red
+  championId: number;
+  spell1Id?: number;
+  spell2Id?: number;
+}
+
+export interface LiveGameInfo {
+  gameId: number;
+  gameMode: string;
+  gameLength: number;
+  summonerQuery: string;
+  participants: LiveGameParticipant[];
+}
+
+export interface AIAnalysisResult {
+  modelName: string;
+  summary: string;
+  favoredTeam: 'blue' | 'red' | 'even';
+  blueWinRate: number;
+  redWinRate: number;
+  teamfightVerdict: {
+    winner: 'blue' | 'red' | 'even';
+    breakdown: string;
+    blueFocusTarget: string;
+    redThreatsToAvoid: string;
+  };
+  macroRoadmap: {
+    earlyGame: string;
+    midGame: string;
+    lateGame: string;
+    recommendedStyle: string;
+  };
+  criticalTips: string[];
 }
 
 export interface TeamDraft {

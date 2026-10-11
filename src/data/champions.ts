@@ -4,6 +4,7 @@ export const CHAMPIONS: Champion[] = [
   // --- TOP ---
   {
     id: 'Aatrox',
+    key: 266,
     name: 'Aatrox',
     nameKo: '아트록스',
     initials: 'ㅇㅌㄹㅅ',
@@ -16,6 +17,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Malphite',
+    key: 54,
     name: 'Malphite',
     nameKo: '말파이트',
     initials: 'ㅁㅍㅇㅌ',
@@ -28,6 +30,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Darius',
+    key: 122,
     name: 'Darius',
     nameKo: '다리우스',
     initials: 'ㄷㄹㅇㅅ',
@@ -40,6 +43,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Fiora',
+    key: 114,
     name: 'Fiora',
     nameKo: '피오라',
     initials: 'ㅍㅇㄹ',
@@ -52,6 +56,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Jax',
+    key: 24,
     name: 'Jax',
     nameKo: '잭스',
     initials: 'ㅈㅅ',
@@ -64,6 +69,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Renekton',
+    key: 58,
     name: 'Renekton',
     nameKo: '레넥톤',
     initials: 'ㄹㄴㅌ',
@@ -76,6 +82,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Ornn',
+    key: 516,
     name: 'Ornn',
     nameKo: '오른',
     initials: 'ㅇㄹ',
@@ -88,6 +95,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Gwen',
+    key: 887,
     name: 'Gwen',
     nameKo: '그웬',
     initials: 'ㄱㅇ',
@@ -100,6 +108,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Camille',
+    key: 164,
     name: 'Camille',
     nameKo: '카밀',
     initials: 'ㅋㅁ',
@@ -112,6 +121,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Kennen',
+    key: 85,
     name: 'Kennen',
     nameKo: '케넨',
     initials: 'ㅋㄴ',
@@ -124,6 +134,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Sion',
+    key: 14,
     name: 'Sion',
     nameKo: '사이온',
     initials: 'ㅅㅇㅇ',
@@ -136,6 +147,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Jayce',
+    key: 126,
     name: 'Jayce',
     nameKo: '제이스',
     initials: 'ㅈㅇㅅ',
@@ -150,6 +162,7 @@ export const CHAMPIONS: Champion[] = [
   // --- JUNGLE ---
   {
     id: 'LeeSin',
+    key: 64,
     name: 'Lee Sin',
     nameKo: '리 신',
     initials: 'ㄹㅅ',
@@ -162,6 +175,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Sejuani',
+    key: 113,
     name: 'Sejuani',
     nameKo: '세주아니',
     initials: 'ㅅㅈㅇㄴ',
@@ -174,6 +188,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Viego',
+    key: 234,
     name: 'Viego',
     nameKo: '비에고',
     initials: 'ㅂㅇㄱ',
@@ -186,6 +201,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'JarvanIV',
+    key: 59,
     name: 'Jarvan IV',
     nameKo: '자르반 4세',
     initials: 'ㅈㄹㅂ',
@@ -198,6 +214,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Nocturne',
+    key: 56,
     name: 'Nocturne',
     nameKo: '녹턴',
     initials: 'ㄴㅌ',
@@ -210,6 +227,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'XinZhao',
+    key: 5,
     name: 'Xin Zhao',
     nameKo: '신 짜오',
     initials: 'ㅅㅉㅇ',
@@ -222,6 +240,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Elise',
+    key: 60,
     name: 'Elise',
     nameKo: '엘리스',
     initials: 'ㅇㄹㅅ',
@@ -234,6 +253,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Karthus',
+    key: 30,
     name: 'Karthus',
     nameKo: '카서스',
     initials: 'ㅋㅅㅅ',
@@ -246,6 +266,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Zac',
+    key: 154,
     name: 'Zac',
     nameKo: '자크',
     initials: 'ㅈㅋ',
@@ -258,6 +279,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Amumu',
+    key: 32,
     name: 'Amumu',
     nameKo: '아무무',
     initials: 'ㅇㅁㅁ',
@@ -272,6 +294,7 @@ export const CHAMPIONS: Champion[] = [
   // --- MID ---
   {
     id: 'Orianna',
+    key: 61,
     name: 'Orianna',
     nameKo: '오리아나',
     initials: 'ㅇㄹㅇㄴ',
@@ -284,6 +307,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Ahri',
+    key: 103,
     name: 'Ahri',
     nameKo: '아리',
     initials: 'ㅇㄹ',
@@ -296,6 +320,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Yasuo',
+    key: 157,
     name: 'Yasuo',
     nameKo: '야스오',
     initials: 'ㅇㅅㅇ',
@@ -308,6 +333,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Yone',
+    key: 777,
     name: 'Yone',
     nameKo: '요네',
     initials: 'ㅇㄴ',
@@ -320,6 +346,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Syndra',
+    key: 134,
     name: 'Syndra',
     nameKo: '신드라',
     initials: 'ㅅㄷㄹ',
@@ -332,6 +359,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Zed',
+    key: 238,
     name: 'Zed',
     nameKo: '제드',
     initials: 'ㅈㄷ',
@@ -344,6 +372,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Azir',
+    key: 268,
     name: 'Azir',
     nameKo: '아지르',
     initials: 'ㅇㅈㄹ',
@@ -356,6 +385,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Sylas',
+    key: 517,
     name: 'Sylas',
     nameKo: '사일러스',
     initials: 'ㅅㅇㄹㅅ',
@@ -368,6 +398,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Viktor',
+    key: 112,
     name: 'Viktor',
     nameKo: '빅토르',
     initials: 'ㅂㅌㄹ',
@@ -380,6 +411,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'LeBlanc',
+    key: 7,
     name: 'LeBlanc',
     nameKo: '르블랑',
     initials: 'ㄹㅂㄹ',
@@ -392,6 +424,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'TwistedFate',
+    key: 4,
     name: 'Twisted Fate',
     nameKo: '트위스티드 페이트',
     initials: 'ㅌㅍ',
@@ -404,6 +437,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Kassadin',
+    key: 38,
     name: 'Kassadin',
     nameKo: '카사딘',
     initials: 'ㅋㅅㄷ',
@@ -418,6 +452,7 @@ export const CHAMPIONS: Champion[] = [
   // --- BOT (ADC) ---
   {
     id: 'Jinx',
+    key: 222,
     name: 'Jinx',
     nameKo: '징크스',
     initials: 'ㅈㅋㅅ',
@@ -430,6 +465,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'KaiSa',
+    key: 145,
     name: 'Kai\'Sa',
     nameKo: '카이사',
     initials: 'ㅋㅇㅅ',
@@ -442,6 +478,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Ezreal',
+    key: 81,
     name: 'Ezreal',
     nameKo: '이즈리얼',
     initials: 'ㅇㅈㄹㅇ',
@@ -454,6 +491,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Jhin',
+    key: 202,
     name: 'Jhin',
     nameKo: '진',
     initials: 'ㅈ',
@@ -466,6 +504,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Caitlyn',
+    key: 51,
     name: 'Caitlyn',
     nameKo: '케이틀린',
     initials: 'ㅋㅇㅌㄹ',
@@ -478,6 +517,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Vayne',
+    key: 67,
     name: 'Vayne',
     nameKo: '베인',
     initials: 'ㅂㅇ',
@@ -490,6 +530,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Lucian',
+    key: 236,
     name: 'Lucian',
     nameKo: '루시안',
     initials: 'ㄹㅅㅇ',
@@ -502,6 +543,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Ashe',
+    key: 22,
     name: 'Ashe',
     nameKo: '애쉬',
     initials: 'ㅇㅅ',
@@ -514,6 +556,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Varus',
+    key: 110,
     name: 'Varus',
     nameKo: '바루스',
     initials: 'ㅂㄹㅅ',
@@ -526,6 +569,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Smolder',
+    key: 901,
     name: 'Smolder',
     nameKo: '스몰더',
     initials: 'ㅅㅁㄷ',
@@ -538,6 +582,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Samira',
+    key: 360,
     name: 'Samira',
     nameKo: '사미라',
     initials: 'ㅅㅁㄹ',
@@ -552,6 +597,7 @@ export const CHAMPIONS: Champion[] = [
   // --- SUPPORT ---
   {
     id: 'Thresh',
+    key: 412,
     name: 'Thresh',
     nameKo: '쓰레쉬',
     initials: 'ㅆㄹㅅ',
@@ -564,6 +610,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Nautilus',
+    key: 111,
     name: 'Nautilus',
     nameKo: '노틸러스',
     initials: 'ㄴㅌㄹㅅ',
@@ -576,6 +623,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Leona',
+    key: 89,
     name: 'Leona',
     nameKo: '레오나',
     initials: 'ㄹㅇㄴ',
@@ -588,6 +636,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Lulu',
+    key: 117,
     name: 'Lulu',
     nameKo: '룰루',
     initials: 'ㄹㄹ',
@@ -600,6 +649,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Nami',
+    key: 267,
     name: 'Nami',
     nameKo: '나미',
     initials: 'ㄴㅁ',
@@ -612,6 +662,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Rell',
+    key: 526,
     name: 'Rell',
     nameKo: '렐',
     initials: 'ㄹ',
@@ -624,6 +675,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Alistar',
+    key: 12,
     name: 'Alistar',
     nameKo: '알리스타',
     initials: 'ㅇㄹㅅㅌ',
@@ -636,6 +688,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Blitzcrank',
+    key: 53,
     name: 'Blitzcrank',
     nameKo: '블리츠크랭크',
     initials: 'ㅂㄹㅊㅋㄹㅋ',
@@ -648,6 +701,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Pyke',
+    key: 555,
     name: 'Pyke',
     nameKo: '파이크',
     initials: 'ㅍㅇㅋ',
@@ -660,6 +714,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Rakan',
+    key: 497,
     name: 'Rakan',
     nameKo: '라칸',
     initials: 'ㄹㅋ',
@@ -672,6 +727,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Karma',
+    key: 43,
     name: 'Karma',
     nameKo: '카르마',
     initials: 'ㅋㄹㅁ',
@@ -684,6 +740,7 @@ export const CHAMPIONS: Champion[] = [
   },
   {
     id: 'Lux',
+    key: 99,
     name: 'Lux',
     nameKo: '럭스',
     initials: 'ㄹㅅ',
@@ -703,3 +760,11 @@ export const ROLE_LABELS: Record<string, string> = {
   BOT: '원딜',
   SUP: '서폿'
 };
+
+export function getChampionById(id: string): Champion | null {
+  return CHAMPIONS.find(c => c.id.toLowerCase() === id.toLowerCase()) || null;
+}
+
+export function getChampionByKey(key: number): Champion | null {
+  return CHAMPIONS.find(c => c.key === key) || null;
+}

@@ -16,7 +16,7 @@ export interface PresetComp {
 export const PRESET_COMPS: PresetComp[] = [
   {
     id: 'preset-1',
-    title: '🔥 정석 5인 한타 연계 vs 원거리 포킹 카이팅',
+    title: '정석 5인 한타 연계 vs 원거리 포킹 카이팅',
     description: '말파/세주/오리아나의 파괴적인 한타 콤보 vs 제이스/이즈리얼/카르마의 거리 조절 포킹 구도',
     blueDraft: {
       TOP: getChamp('Malphite'),
@@ -35,7 +35,7 @@ export const PRESET_COMPS: PresetComp[] = [
   },
   {
     id: 'preset-2',
-    title: '⚡ 1-3-1 날개 스플릿 vs 묵직한 국밥 이니시',
+    title: '1-3-1 날개 스플릿 vs 묵직한 국밥 이니시',
     description: '피오라/아리의 기동성과 사이드 철거 vs 오른/자르반/애쉬의 묵직한 앞라인과 글로벌 이니시',
     blueDraft: {
       TOP: getChamp('Fiora'),
@@ -54,7 +54,7 @@ export const PRESET_COMPS: PresetComp[] = [
   },
   {
     id: 'preset-3',
-    title: '⚠️ 올AD 암살 조합(위험) vs 단단한 안티AD 탱커',
+    title: '올AD 암살 조합(위험) vs 안티AD 탱커 밸류',
     description: '올AD 극딜 암살 조합이 상대 단단한 방템 앞라인(말파/자크/알리)을 만났을 때의 상성 분석',
     blueDraft: {
       TOP: getChamp('Yasuo'),
@@ -73,7 +73,7 @@ export const PRESET_COMPS: PresetComp[] = [
   },
   {
     id: 'preset-4',
-    title: '⏳ 후반 왕귀 하이퍼캐리 vs 초반 15분 전복 스노우볼',
+    title: '후반 왕귀 하이퍼캐리 vs 초반 15분 스노우볼',
     description: '카사딘/스몰더의 후반 절대 권력 vs 레넥톤/엘리스/르블랑의 초반 타워 다이브 압살 조합',
     blueDraft: {
       TOP: getChamp('Gwen'),

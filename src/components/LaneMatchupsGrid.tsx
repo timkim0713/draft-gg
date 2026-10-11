@@ -8,11 +8,11 @@ interface LaneMatchupsGridProps {
 
 export const LaneMatchupsGrid: React.FC<LaneMatchupsGridProps> = ({ matchups }) => {
   return (
-    <div className="bg-[#161a23] border border-[#232936] rounded-xl p-5 shadow-lg space-y-4">
+    <div className="bg-[#121620] border border-[#202738] rounded-xl p-4 sm:p-5 shadow-lg space-y-3.5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-sm text-white flex items-center gap-2">
           <Swords size={16} className="text-amber-400" />
-          라인별 1:1 맞대결 상성 & 코칭 팁
+          라인별 1:1 맞대결 상성 및 코칭 팁
         </h3>
         <span className="text-[11px] text-gray-400">
           초반 라인전 주도권 기준
@@ -27,20 +27,20 @@ export const LaneMatchupsGrid: React.FC<LaneMatchupsGridProps> = ({ matchups }) 
           return (
             <div
               key={m.role}
-              className="bg-[#11141c] border border-[#1e2432] rounded-lg p-3 flex flex-col justify-between space-y-2.5"
+              className="bg-[#0e121a] border border-[#1b2230] rounded-lg p-3 flex flex-col justify-between space-y-2.5"
             >
               {/* Lane Header */}
-              <div className="flex items-center justify-between border-b border-[#1b212c] pb-1.5">
+              <div className="flex items-center justify-between border-b border-[#181e2b] pb-1.5">
                 <span className="text-xs font-bold text-gray-300">
                   {m.roleName} 라인
                 </span>
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
                     isBlueFavored
-                      ? 'bg-[#5383e8]/20 text-[#719df0]'
+                      ? 'bg-[#4a72ff]/15 text-[#719df0]'
                       : isRedFavored
-                      ? 'bg-[#e84057]/20 text-[#f56678]'
-                      : 'bg-gray-700/20 text-gray-400'
+                      ? 'bg-[#e0455f]/15 text-[#f56678]'
+                      : 'bg-gray-800 text-gray-400'
                   }`}
                 >
                   {isBlueFavored ? '블루 우세' : isRedFavored ? '레드 우세' : '호각'}
@@ -51,7 +51,7 @@ export const LaneMatchupsGrid: React.FC<LaneMatchupsGridProps> = ({ matchups }) 
               <div className="flex items-center justify-around py-1">
                 {/* Blue Champ */}
                 <div className="flex flex-col items-center">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-[#2a374f] bg-[#161a24]">
+                  <div className="w-10 h-10 rounded overflow-hidden border border-[#242e42] bg-[#121622]">
                     {m.blueChamp ? (
                       <img
                         src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${m.blueChamp.id}.png`}
@@ -73,7 +73,7 @@ export const LaneMatchupsGrid: React.FC<LaneMatchupsGridProps> = ({ matchups }) 
 
                 {/* Red Champ */}
                 <div className="flex flex-col items-center">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden border border-[#4a2a35] bg-[#24161a]">
+                  <div className="w-10 h-10 rounded overflow-hidden border border-[#3b1f28] bg-[#1c1216]">
                     {m.redChamp ? (
                       <img
                         src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${m.redChamp.id}.png`}
@@ -93,7 +93,7 @@ export const LaneMatchupsGrid: React.FC<LaneMatchupsGridProps> = ({ matchups }) 
               </div>
 
               {/* Tip */}
-              <div className="bg-[#0e1118] p-2 rounded text-[11px] text-gray-400 leading-snug min-h-[48px] flex items-center">
+              <div className="bg-[#0b0e14] p-2 rounded text-[11px] text-gray-400 leading-snug min-h-[44px] flex items-center">
                 {m.tip}
               </div>
             </div>

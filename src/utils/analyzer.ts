@@ -69,49 +69,49 @@ export function calculateTeamStats(draft: TeamDraft): TeamStatsSummary {
 
   // Damage warning
   if (adRatio >= 75 && count >= 3) {
-    warnings.push('⚠️ 올AD 주의 (상대 닌자의 신발/가시갑옷 방템 밸류 극대화)');
+    warnings.push('[주의] 올AD 치중 (상대 방어구 아이템 밸류 극대화)');
   } else if (apRatio >= 75 && count >= 3) {
-    warnings.push('⚠️ 올AP 주의 (상대 헤르메스/케이닉 루 Fern 등 마저템에 무력화)');
+    warnings.push('[주의] 올AP 치중 (상대 마법 저항력 아이템에 무력화)');
   } else if (adRatio >= 40 && adRatio <= 60 && count >= 3) {
-    synergies.push('✨ 황금 밸런스 딜구조 (상대 방어 아이템 선택 강제 곤란)');
+    synergies.push('[강점] 황금 밸런스 딜구조 (상대 방어 아이템 선택 강제 곤란)');
   }
 
   // Frontline warning
   if (avgTankiness < 4.5 && count >= 3) {
-    warnings.push('⚠️ 앞라인(탱커) 부재 (적 진입 시 딜러진 즉각 노출 위험)');
+    warnings.push('[주의] 앞라인(탱커) 부재 (적 진입 시 딜러진 즉각 노출 위험)');
   } else if (avgTankiness >= 7.5 && count >= 3) {
-    synergies.push('✨ 든든한 앞라인 (장기전 및 오브젝트 버스트 든든함)');
+    synergies.push('[강점] 든든한 앞라인 (장기전 및 오브젝트 버스트 든든함)');
   }
 
   // Engage warning
   if (avgEngage < 4.2 && count >= 3) {
-    warnings.push('⚠️ 강제 이니시 부재 (상대가 거리 벌리면 싸움 열기 힘듦)');
+    warnings.push('[주의] 강제 이니시 부재 (상대가 거리 벌리면 싸움 열기 힘듦)');
   } else if (avgEngage >= 7.5 && count >= 3) {
-    synergies.push('✨ 강력한 한타 이니시 (원하는 타이밍에 강제 교전 가능)');
+    synergies.push('[강점] 강력한 한타 이니시 (원하는 타이밍에 강제 교전 가능)');
   }
 
   // CC Warning
   if (avgCC < 4.5 && count >= 3) {
-    warnings.push('⚠️ 하드 CC 부족 (적 암살자/칼바람 진입 제어 취약)');
+    warnings.push('[주의] 하드 CC 부족 (적 암살자/칼바람 진입 제어 취약)');
   } else if (avgCC >= 7.5 && count >= 3) {
-    synergies.push('✨ 풍부한 CC기 연계 (적 딜러진 행동 불가 확정)');
+    synergies.push('[강점] 풍부한 CC기 연계 (적 딜러진 행동 불가 확정)');
   }
 
   // Poke synergy
   if (avgPoke >= 6.8 && count >= 3) {
-    synergies.push('✨ 강력한 원거리 포킹 (오브젝트 대치 구도에서 피 깎기 최적)');
+    synergies.push('[강점] 강력한 원거리 포킹 (오브젝트 대치 구도에서 체력 압박)');
   }
 
   // SplitPush synergy
   if (avgSplitPush >= 7.2 && count >= 3) {
-    synergies.push('✨ 날카로운 1:1 사이드 철거 (스플릿 푸시로 적 분산 유도)');
+    synergies.push('[강점] 날카로운 1:1 사이드 철거 (스플릿 푸시로 적 분산 유도)');
   }
 
   // Scaling / Early Game
   if (avgScaling >= 7.8 && count >= 3) {
-    synergies.push('✨ 후반 왕귀 밸류 (3코어 이후 게임 주도권 확보)');
+    synergies.push('[강점] 후반 왕귀 밸류 (3코어 이후 게임 주도권 확보)');
   } else if (avgEarlyGame >= 7.5 && avgScaling < 5.5 && count >= 3) {
-    warnings.push('⚠️ 유통기한 주의 (초반 20분 내 스노우볼 굴려야 승리)');
+    warnings.push('[주의] 유통기한 주의 (초반 20분 내 스노우볼 굴려야 승리)');
   }
 
   return {
