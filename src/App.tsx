@@ -6,6 +6,7 @@ import { fetchLiveGame, mapLiveGameToDraft } from './services/riotService';
 import { requestAICompAnalysis } from './services/aiService';
 import { Header } from './components/Header';
 import { DraftSlot } from './components/DraftSlot';
+import { FastInlinePicker } from './components/FastInlinePicker';
 import { QuickBriefingCard } from './components/QuickBriefingCard';
 import { WinRateBar } from './components/WinRateBar';
 import { TeamfightCard } from './components/TeamfightCard';
@@ -15,7 +16,7 @@ import { LaneMatchupsGrid } from './components/LaneMatchupsGrid';
 import { ChampionSelectModal } from './components/ChampionSelectModal';
 import { SettingsModal } from './components/SettingsModal';
 import { AICoachPanel } from './components/AICoachPanel';
-import { AlertCircle, Radio, Zap, Layers } from 'lucide-react';
+import { AlertCircle, Radio, Zap, Layers, Sparkles } from 'lucide-react';
 
 const EMPTY_DRAFT: TeamDraft = {
   TOP: null,
@@ -25,8 +26,19 @@ const EMPTY_DRAFT: TeamDraft = {
   SUP: null
 };
 
+const ROLES: Role[] = ['TOP', 'JUG', 'MID', 'BOT', 'SUP'];
+
 export function App() {
-  // Initialize with Preset 1
+  // Input Mode: 'manual' (Ultra-fast manual 1-click pick) vs 'live' (Riot Spectator API)
+  const [inputMode, setInputMode] = useState<'manual' | 'live'>('manual');
+
+  // Currently focused slot for rapid picking
+  const [activeSlot, setActiveSlot] = useState<{ team: 'blue' | 'red'; role: Role }>({
+    team: 'blue',
+    role: 'TOP'
+  });
+
+  // Draft Data (Initialized with Preset 1 for instant demo)
   const [blueDraft, setBlueDraft] = useState<TeamDraft>(PRESET_COMPS[0].blueDraft);
   const [redDraft, setRedDraft] = useState<TeamDraft>(PRESET_COMPS[0].redDraft);
 
@@ -41,13 +53,12 @@ export function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSearchingLiveGame, setIsSearchingLiveGame] = useState(false);
   const [liveGameNotice, setLiveGameNotice] = useState<{ type: 'success' | 'info' | 'error'; message: string } | null>(null);
-  const [activeLiveGame, setActiveLiveGame] = useState<LiveGameInfo | null>(null);
 
   // AI Analysis States
   const [aiResult, setAiResult] = useState<AIAnalysisResult | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
 
-  // Modal State for picking champion
+  // Modal State for custom search modal
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     team: 'blue' | 'red';
@@ -86,6 +97,37 @@ export function App() {
     triggerAIAnalysis(PRESET_COMPS[0].blueDraft, PRESET_COMPS[0].redDraft);
   }, [triggerAIAnalysis]);
 
+  // Next slot calculator for rapid auto-advance
+  const advanceToNextSlot = (currentTeam: 'blue' | 'red', currentRole: Role) => {
+    const currentIndex = ROLES.indexOf(currentRole);
+    if (currentIndex < ROLES.length - 1) {
+      // Advance to next role on same team
+      setActiveSlot({ team: currentTeam, role: ROLES[currentIndex + 1] });
+    } else if (currentTeam === 'blue') {
+      // Switch to red team Top
+      setActiveSlot({ team: 'red', role: 'TOP' });
+    } else {
+      // Back to blue team Top
+      setActiveSlot({ team: 'blue', role: 'TOP' });
+    }
+  };
+
+  // Ultra-fast Inline Champion Selection
+  const handleFastSelectChampion = (champion: Champion) => {
+    const { team, role } = activeSlot;
+    if (team === 'blue') {
+      const updated = { ...blueDraft, [role]: champion };
+      setBlueDraft(updated);
+      triggerAIAnalysis(updated, redDraft);
+    } else {
+      const updated = { ...redDraft, [role]: champion };
+      setRedDraft(updated);
+      triggerAIAnalysis(blueDraft, updated);
+    }
+    // Auto-advance to the next slot for maximum draft speed!
+    advanceToNextSlot(team, role);
+  };
+
   // Live Game Search Handler
   const handleSearchLiveGame = async (query: string) => {
     setIsSearchingLiveGame(true);
@@ -98,14 +140,12 @@ export function App() {
         const { blueDraft: b, redDraft: r } = mapLiveGameToDraft(res.data.participants);
         setBlueDraft(b);
         setRedDraft(r);
-        setActiveLiveGame(res.data);
         setLiveGameNotice({
           type: 'success',
           message: `라이브 인게임 데이터 연동 완료: ${res.data.summonerQuery} (${res.data.gameMode})`
         });
         triggerAIAnalysis(b, r);
       } else {
-        setActiveLiveGame(null);
         setLiveGameNotice({
           type: res.inGame ? 'info' : 'error',
           message: res.message || '인게임 정보를 찾을 수 없습니다.'
@@ -128,7 +168,13 @@ export function App() {
     localStorage.setItem('lol_comp_gemini_key', gKey);
   };
 
-  const openSelectModal = (team: 'blue' | 'red', role: Role) => {
+  const handleSlotClick = (team: 'blue' | 'red', role: Role) => {
+    setActiveSlot({ team, role });
+    // In manual mode, clicking changes the active slot for inline picker
+    // If double clicked or user wants full search modal:
+  };
+
+  const handleOpenSearchModal = (team: 'blue' | 'red', role: Role) => {
     setModalState({
       isOpen: true,
       team,
@@ -136,7 +182,7 @@ export function App() {
     });
   };
 
-  const handleSelectChampion = (champion: Champion) => {
+  const handleModalSelectChampion = (champion: Champion) => {
     if (!modalState.role) return;
     const role = modalState.role;
 
@@ -149,6 +195,7 @@ export function App() {
       setRedDraft(updated);
       triggerAIAnalysis(blueDraft, updated);
     }
+    advanceToNextSlot(modalState.team, role);
   };
 
   const handleClearSlot = (team: 'blue' | 'red', role: Role) => {
@@ -166,8 +213,8 @@ export function App() {
   const handleReset = () => {
     setBlueDraft({ ...EMPTY_DRAFT });
     setRedDraft({ ...EMPTY_DRAFT });
-    setActiveLiveGame(null);
     setLiveGameNotice(null);
+    setActiveSlot({ team: 'blue', role: 'TOP' });
   };
 
   const handleSwapTeams = () => {
@@ -181,17 +228,16 @@ export function App() {
   const handleSelectPreset = (preset: PresetComp) => {
     setBlueDraft(preset.blueDraft);
     setRedDraft(preset.redDraft);
-    setActiveLiveGame(null);
     setLiveGameNotice(null);
     triggerAIAnalysis(preset.blueDraft, preset.redDraft);
   };
 
-  const roles: Role[] = ['TOP', 'JUG', 'MID', 'BOT', 'SUP'];
-
   return (
     <div className="min-h-screen bg-[#090b10] text-[#e6edf3] flex flex-col font-sans">
-      {/* Top Navigation */}
+      {/* Top Navigation with Mode Toggle */}
       <Header
+        inputMode={inputMode}
+        onToggleInputMode={setInputMode}
         onSelectPreset={handleSelectPreset}
         onReset={handleReset}
         onSwapTeams={handleSwapTeams}
@@ -203,9 +249,9 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 space-y-3.5">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 space-y-3">
         {/* Live Game Status Banner */}
-        {liveGameNotice && (
+        {inputMode === 'live' && liveGameNotice && (
           <div
             className={`px-3 py-2 rounded-lg border text-xs flex items-center justify-between transition-all ${
               liveGameNotice.type === 'success'
@@ -232,7 +278,7 @@ export function App() {
           </div>
         )}
 
-        {/* View Mode Toggle Bar */}
+        {/* View Mode Toggle Bar (Quick 1-Minute vs Detailed) */}
         <div className="flex items-center justify-between bg-[#10141e] border border-[#1d2434] p-1.5 rounded-lg">
           <div className="flex items-center gap-1">
             <button
@@ -260,7 +306,7 @@ export function App() {
           </div>
 
           <span className="text-[11px] text-gray-500 hidden sm:inline mr-2">
-            {viewMode === 'quick' ? '게임 시작 전 핵심 3줄과 한타 결론만 표시' : '스탯 차트 및 심층 리포트 표시'}
+            {inputMode === 'manual' ? '수동 빠른 픽 모드 활성화됨 (클릭 시 자동 다음 슬롯 이동)' : '라이브 인게임 조회 모드'}
           </span>
         </div>
 
@@ -277,19 +323,29 @@ export function App() {
                   </span>
                   <span className="text-[11px] text-gray-400 font-medium">우리 팀</span>
                 </div>
-                <span className="text-[10px] text-gray-500">클릭하여 변경</span>
+                <span className="text-[10px] text-gray-500">슬롯 클릭 시 픽 대상 지정</span>
               </div>
               <div className="space-y-1">
-                {roles.map(role => (
-                  <DraftSlot
-                    key={`blue-${role}`}
-                    role={role}
-                    champion={blueDraft[role]}
-                    team="blue"
-                    onClick={() => openSelectModal('blue', role)}
-                    onClear={() => handleClearSlot('blue', role)}
-                  />
-                ))}
+                {ROLES.map(role => {
+                  const isActive = activeSlot.team === 'blue' && activeSlot.role === role && inputMode === 'manual';
+                  return (
+                    <div
+                      key={`blue-${role}`}
+                      className={`relative rounded-lg transition-all ${
+                        isActive ? 'ring-2 ring-[#4a72ff]' : ''
+                      }`}
+                      onClick={() => handleSlotClick('blue', role)}
+                    >
+                      <DraftSlot
+                        role={role}
+                        champion={blueDraft[role]}
+                        team="blue"
+                        onClick={() => handleSlotClick('blue', role)}
+                        onClear={() => handleClearSlot('blue', role)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -303,23 +359,43 @@ export function App() {
                   </span>
                   <span className="text-[11px] text-gray-400 font-medium">상대 팀</span>
                 </div>
-                <span className="text-[10px] text-gray-500">클릭하여 변경</span>
+                <span className="text-[10px] text-gray-500">슬롯 클릭 시 픽 대상 지정</span>
               </div>
               <div className="space-y-1">
-                {roles.map(role => (
-                  <DraftSlot
-                    key={`red-${role}`}
-                    role={role}
-                    champion={redDraft[role]}
-                    team="red"
-                    onClick={() => openSelectModal('red', role)}
-                    onClear={() => handleClearSlot('red', role)}
-                  />
-                ))}
+                {ROLES.map(role => {
+                  const isActive = activeSlot.team === 'red' && activeSlot.role === role && inputMode === 'manual';
+                  return (
+                    <div
+                      key={`red-${role}`}
+                      className={`relative rounded-lg transition-all ${
+                        isActive ? 'ring-2 ring-[#e0455f]' : ''
+                      }`}
+                      onClick={() => handleSlotClick('red', role)}
+                    >
+                      <DraftSlot
+                        role={role}
+                        champion={redDraft[role]}
+                        team="red"
+                        onClick={() => handleSlotClick('red', role)}
+                        onClear={() => handleClearSlot('red', role)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
         </section>
+
+        {/* Manual Speed Picker Bar (Shown only in manual mode for instant 1-click picks) */}
+        {inputMode === 'manual' && (
+          <FastInlinePicker
+            activeTeam={activeSlot.team}
+            activeRole={activeSlot.role}
+            onSelectChampion={handleFastSelectChampion}
+            onSelectSlot={(team, role) => setActiveSlot({ team, role })}
+          />
+        )}
 
         {/* MODE A: 1-Minute Quick Briefing (Default) */}
         {viewMode === 'quick' && (
@@ -333,14 +409,14 @@ export function App() {
 
         {/* MODE B: Detailed Analysis View */}
         {viewMode === 'detailed' && (
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             <AICoachPanel
               aiResult={aiResult}
               isLoading={isAILoading}
               onRefresh={() => triggerAIAnalysis(blueDraft, redDraft)}
             />
             <WinRateBar analysis={analysis} />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <TeamfightCard analysis={analysis} />
               <StatsRadarOrBars
                 blueStats={analysis.blueStats}
@@ -364,7 +440,7 @@ export function App() {
       <ChampionSelectModal
         isOpen={modalState.isOpen}
         onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
-        onSelect={handleSelectChampion}
+        onSelect={handleModalSelectChampion}
         targetRole={modalState.role}
         team={modalState.team}
       />
