@@ -35,7 +35,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               <p className="font-bold text-white mb-0.5">초고속 초성 검색 지원</p>
               <p className="text-gray-400">
                 픽창 시간이 촉박할 때는 챔피언 검색창에 초성만 입력하세요.
-                (예: <span className="text-[#5383e8]">ㅇㅅㅇ</span> ➔ 야스오, <span className="text-[#5383e8]">ㅁㅍㅇㅌ</span> ➔ 말파이트, <span className="text-[#5383e8]">ㄹㅅ</span> ➔ 리 신)
+                (예: <span className="text-[#5383e8]">ㅇㅅㅇ</span> -&gt; 야스오, <span className="text-[#5383e8]">ㅁㅍㅇㅌ</span> -&gt; 말파이트, <span className="text-[#5383e8]">ㄹㅅ</span> -&gt; 리 신)
               </p>
             </div>
           </div>

@@ -16,6 +16,8 @@ import { LaneMatchupsGrid } from './components/LaneMatchupsGrid';
 import { ChampionSelectModal } from './components/ChampionSelectModal';
 import { SettingsModal } from './components/SettingsModal';
 import { AICoachPanel } from './components/AICoachPanel';
+import { LaneCounterAdvisorCard } from './components/LaneCounterAdvisorCard';
+import { CHAMPIONS } from './data/champions';
 import { AlertCircle, Radio, Zap, Layers, Sparkles } from 'lucide-react';
 
 const EMPTY_DRAFT: TeamDraft = {
@@ -392,6 +394,11 @@ export function App() {
           <FastInlinePicker
             activeTeam={activeSlot.team}
             activeRole={activeSlot.role}
+            opponentChamp={
+              activeSlot.team === 'blue'
+                ? redDraft[activeSlot.role]
+                : blueDraft[activeSlot.role]
+            }
             onSelectChampion={handleFastSelectChampion}
             onSelectSlot={(team, role) => setActiveSlot({ team, role })}
           />
@@ -423,6 +430,18 @@ export function App() {
                 redStats={analysis.redStats}
               />
             </div>
+            <LaneCounterAdvisorCard
+              blueDraft={blueDraft}
+              redDraft={redDraft}
+              onSelectCounter={(role, champId) => {
+                const champ = CHAMPIONS.find(c => c.id === champId);
+                if (champ) {
+                  const updated = { ...blueDraft, [role]: champ };
+                  setBlueDraft(updated);
+                  triggerAIAnalysis(updated, redDraft);
+                }
+              }}
+            />
             <MacroWinConditionCard analysis={analysis} />
             <LaneMatchupsGrid matchups={analysis.laneMatchups} />
           </div>

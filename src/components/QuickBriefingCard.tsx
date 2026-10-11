@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AnalysisResult, AIAnalysisResult, TeamDraft, Role } from '../types';
 import { ROLE_LABELS } from '../data/champions';
-import { ShieldAlert, Copy, Check, UserCheck, Sparkles, Crosshair } from 'lucide-react';
+import { getCounterPicks, getSituationalBuildAdvice } from '../utils/counterAndBuildAdvisor';
+import { ShieldAlert, Copy, Check, UserCheck, Crosshair, Target, Zap, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface QuickBriefingCardProps {
   analysis: AnalysisResult;
@@ -59,17 +60,15 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
   const myChamp = blueDraft[selectedMyRole];
   const enemyChamp = redDraft[selectedMyRole];
 
-  // Recommended Summoner Spell heuristic
-  const getRecommendedSpell = (role: Role) => {
-    if (role === 'JUG') return '강타 + 점멸';
-    if (role === 'SUP') return analysis.redStats.avgMobility >= 7 ? '탈진 + 점멸' : '점화 + 점멸';
-    if (analysis.redStats.avgCC >= 7.5 && (role === 'MID' || role === 'BOT')) {
-      return '점화/힐 대신 [정화(Cleanse)] 강력 추천 (상대 하드 CC 과다)';
-    }
-    if (role === 'TOP') return '순간이동 + 점멸';
-    if (role === 'BOT') return '회복(또는 방어막) + 점멸';
-    return '점화 또는 텔레포트 + 점멸';
-  };
+  // Dynamic Runes and Items based on enemy comp
+  const buildAdvice = useMemo(() => {
+    return getSituationalBuildAdvice(myChamp, selectedMyRole, redDraft, analysis.redStats);
+  }, [myChamp, selectedMyRole, redDraft, analysis.redStats]);
+
+  // Dynamic Counter Picks for this role vs enemy
+  const counterPicks = useMemo(() => {
+    return getCounterPicks(enemyChamp, selectedMyRole);
+  }, [enemyChamp, selectedMyRole]);
 
   return (
     <div className="bg-[#121620] border border-[#202738] rounded-xl p-4 sm:p-5 shadow-xl space-y-4">
@@ -100,22 +99,22 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         <div className="flex items-center gap-2 self-end sm:self-center">
           <button
             onClick={handleCopyChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#192233] hover:bg-[#223049] border border-[#263550] text-[#719df0] hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm"
-            title="롤 픽창 채팅에 바로 붙여넣을 수 있는 1줄 브리핑 복사"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#172033] hover:bg-[#202c46] border border-[#28385e] hover:border-[#4a72ff] rounded-lg text-xs font-bold text-[#719df0] hover:text-white transition-all cursor-pointer shadow-sm"
+            title="게임 시작 전 아군 채팅창에 붙여넣을 1줄 핵심 브리핑"
           >
             {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-            <span>{copied ? '복사됨 (Ctrl+V)' : '팀 채팅용 1줄 오더 복사'}</span>
+            <span>{copied ? '복사 완료! (Ctrl+V)' : '팀 채팅용 1줄 오더 복사'}</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Three-Bullet Action Plan (초반, 중반, 주의점 3줄) */}
+      {/* 2. Three-Line Macro Roadmap (초반, 중반, 주의점) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {/* Step 1: Early */}
+        {/* Step 1: Early / Objective */}
         <div className="bg-[#0e121a] border border-[#1a2130] p-3 rounded-lg space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-amber-400">
-            <span>1. 초반 오더 (0~14분)</span>
-            <span className="text-[10px] text-gray-500 font-normal">라인전/오브젝트</span>
+            <span>1. 초반 동선 (0~14분)</span>
+            <span className="text-[10px] text-gray-500 font-normal">오브젝트 우선순위</span>
           </div>
           <p className="text-xs text-gray-200 font-medium leading-snug">
             {winCondition.earlyGame.objectiveFocus}
@@ -125,7 +124,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
           </p>
         </div>
 
-        {/* Step 2: Mid/Teamfight */}
+        {/* Step 2: Mid / Teamfight */}
         <div className="bg-[#0e121a] border border-[#1a2130] p-3 rounded-lg space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-[#4a72ff]">
             <span>2. 한타/중반 오더 (15~25분)</span>
@@ -154,9 +153,10 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         </div>
       </div>
 
-      {/* 3. Personalized "My Role Focus" Bar (내 포지션 맞춤 행동 강령) */}
-      <div className="bg-[#0e121a] p-3 rounded-lg border border-[#1a2130] space-y-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#18202d] pb-2">
+      {/* 3. Personalized "My Role Focus" Bar with Dynamic Runes, Items & Counters */}
+      <div className="bg-[#0e121a] p-3.5 rounded-lg border border-[#1a2130] space-y-3">
+        {/* Role Selector Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#18202d] pb-2.5">
           <div className="flex items-center gap-2">
             <UserCheck size={14} className="text-[#4a72ff]" />
             <span className="text-xs font-bold text-gray-200">내 포지션 맞춤 미션:</span>
@@ -178,13 +178,13 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
           </div>
 
           <div className="text-[11px] text-gray-400">
-            추천 스펠: <span className="text-amber-300 font-semibold">{getRecommendedSpell(selectedMyRole)}</span>
+            추천 스펠: <span className="text-amber-300 font-semibold">{buildAdvice.recommendedSpell}</span>
           </div>
         </div>
 
-        {/* Matchup & Action Advice */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 text-gray-300">
+        {/* Current Matchup Status */}
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs bg-[#131824] p-2 rounded border border-[#1c2436]">
+          <div className="flex items-center gap-2">
             <span className="font-bold text-white">
               {myChamp ? myChamp.nameKo : '내 챔피언'} vs {enemyChamp ? enemyChamp.nameKo : '상대'}
             </span>
@@ -199,7 +199,121 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
             >
               {myMatchup?.favored === 'blue' ? '주도권 우세' : myMatchup?.favored === 'red' ? '상대 주도권' : '호각'}
             </span>
-            <span className="text-gray-400 text-[11px]">{myMatchup?.tip}</span>
+          </div>
+          <span className="text-gray-300 text-[11px]">{myMatchup?.tip}</span>
+        </div>
+
+        {/* Sub-Grid: Left = Runes & Situational Items / Right = Counter Picks */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-1">
+          {/* A. Situational Runes & Core Items */}
+          <div className="bg-[#10141e] p-2.5 rounded border border-[#1c2436] space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-[#719df0] border-b border-[#18202d] pb-1">
+              <span className="flex items-center gap-1">
+                <ShieldCheck size={13} className="text-sky-400" />
+                적 조합 카운터 룬 & 빌드 추천
+              </span>
+              <span className="text-[10px] text-gray-500 font-normal">적 특성 맞춤 대응</span>
+            </div>
+
+            {/* Runes */}
+            <div className="space-y-1 text-xs">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-gray-400">보조 룬 트리:</span>
+                <span className="font-semibold text-white">{buildAdvice.secondaryRunes.treeName}</span>
+              </div>
+              <p className="text-[11px] text-amber-200/90 font-medium">
+                {buildAdvice.secondaryRunes.runes.join(' + ')}
+              </p>
+              <p className="text-[10px] text-gray-400">
+                이유: {buildAdvice.secondaryRunes.reason}
+              </p>
+              <div className="text-[10px] text-gray-500">
+                추천 파편: {buildAdvice.shards}
+              </div>
+            </div>
+
+            {/* Situational Items */}
+            <div className="border-t border-[#18202d] pt-1.5 space-y-1">
+              <span className="text-[11px] font-bold text-gray-300 block">
+                상황별 핵심 코어 템:
+              </span>
+              <div className="space-y-1">
+                {buildAdvice.situationalCoreItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-1.5 rounded bg-[#151b27] border border-[#212a3d] text-[11px] flex items-start justify-between gap-1"
+                  >
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`text-[9px] px-1 py-0.2 rounded font-bold ${
+                            item.priority === '필수'
+                              ? 'bg-rose-950 text-rose-300 border border-rose-800'
+                              : 'bg-sky-950 text-sky-300 border border-sky-800'
+                          }`}
+                        >
+                          {item.priority}
+                        </span>
+                        <strong className="text-white font-semibold">{item.name}</strong>
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{item.reason}</p>
+                    </div>
+                    <span className="text-[9px] text-gray-500 shrink-0 font-mono">
+                      {item.timing}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* B. Top 3 Counter Picks vs Enemy Champ in this Lane */}
+          <div className="bg-[#10141e] p-2.5 rounded border border-[#1c2436] space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-emerald-400 border-b border-[#18202d] pb-1">
+              <span className="flex items-center gap-1">
+                <Target size={13} className="text-emerald-400" />
+                상대 ({enemyChamp ? enemyChamp.nameKo : '적'}) 카운터픽 TOP 3
+              </span>
+              <span className="text-[10px] text-gray-500 font-normal">라인 상성 우위</span>
+            </div>
+
+            {enemyChamp && counterPicks.length > 0 ? (
+              <div className="space-y-1.5">
+                {counterPicks.map((cp, idx) => (
+                  <div
+                    key={cp.champion.id}
+                    className="p-1.5 rounded bg-[#151b27] border border-[#212a3d] text-xs flex items-start gap-2"
+                  >
+                    <img
+                      src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${cp.champion.id}.png`}
+                      alt={cp.champion.nameKo}
+                      className="w-7 h-7 rounded object-cover shrink-0 mt-0.5"
+                      onError={e => { (e.target as HTMLElement).style.display = 'none'; }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-[11px]">
+                          {idx + 1}. {cp.champion.nameKo}
+                        </span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-400 font-mono font-bold border border-emerald-800/40">
+                          {cp.winRateAdvantage}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-gray-300 leading-tight mt-0.5">
+                        {cp.tacticalReason}
+                      </p>
+                      <p className="text-[9px] text-gray-500 mt-0.5">
+                        타이밍: {cp.spikeTip}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs text-gray-500">
+                상대 {ROLE_LABELS[selectedMyRole]} 챔피언이 선택되면 실시간 최적 카운터가 표시됩니다.
+              </div>
+            )}
           </div>
         </div>
       </div>
