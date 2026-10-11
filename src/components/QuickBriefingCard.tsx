@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { AnalysisResult, AIAnalysisResult, TeamDraft, Role } from '../types';
-import { ROLE_LABELS } from '../data/champions';
 import { getCounterPicks, getSituationalBuildAdvice } from '../utils/counterAndBuildAdvisor';
-import { ShieldAlert, Copy, Check, UserCheck, Crosshair, Target, Zap, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { ShieldAlert, Copy, Check, UserCheck, Target, ShieldCheck } from 'lucide-react';
 
 interface QuickBriefingCardProps {
   analysis: AnalysisResult;
@@ -17,6 +17,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
   blueDraft,
   redDraft
 }) => {
+  const { lang, getChampName, getRoleName, t } = useLanguage();
   const { favoredTeam, blueWinRate, redWinRate, teamfight, winCondition, laneMatchups } = analysis;
   const [selectedMyRole, setSelectedMyRole] = useState<Role>('MID');
   const [copied, setCopied] = useState(false);
@@ -30,7 +31,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
     .filter(c => c?.keySkillsTip)
     .slice(0, 2)
     .map(c => ({
-      name: c!.nameKo,
+      name: getChampName(c),
       tip: c!.keySkillsTip!
     }));
 
@@ -38,12 +39,21 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
 
   // Generate 1-line Team Chat Macro
   const generateChatMacro = () => {
+    if (lang === 'en') {
+      const verdict = teamfight.winner === 'blue'
+        ? 'Our 5v5 teamfight synergy is dominant! Group for Dragon/Baron instead of overextending side lanes!'
+        : teamfight.winner === 'red'
+        ? 'Enemy 5v5 engage is dangerous! Avoid direct 5v5, split side lanes and look for pickoffs!'
+        : 'Maintain lane priority and secure river vision 1 minute before objectives!';
+      const threatMention = topThreats.length > 0 ? ` (Watch out for enemy ${topThreats[0].name} ult)` : '';
+      return `[Team Macro] ${verdict}${threatMention}`;
+    }
+
     const verdict = teamfight.winner === 'blue'
       ? '우리팀 5:5 한타 연계가 훨씬 좋으니 사이드 돌지 말고 용/바론 5:5 강제 한타 모여요!'
       : teamfight.winner === 'red'
       ? '상대 한타 연계가 좋으니 정면 5:5 피하고 사이드 흔들면서 잘라먹기 위주로 해요!'
       : '초반 라인 주도권 지키면서 오브젝트 1분 전 시야 먼저 잡아주세요!';
-
     const threatMention = topThreats.length > 0 ? ` (상대 ${topThreats[0].name} 궁 주의)` : '';
     return `[팀합] ${verdict}${threatMention}`;
   };
@@ -85,10 +95,10 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
             }`}
           >
             {isBlueFavored
-              ? `블루팀 ${blueWinRate}% 조합 우세`
+              ? t('blueFavored', { rate: blueWinRate })
               : isRedFavored
-              ? `레드팀 ${redWinRate}% 조합 우세`
-              : '50:50 백중세 (피지컬 싸움)'}
+              ? t('redFavored', { rate: redWinRate })
+              : t('evenFavored')}
           </div>
           <span className="text-xs text-gray-300 font-medium">
             {aiResult?.summary || analysis.headline}
@@ -100,21 +110,21 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
           <button
             onClick={handleCopyChat}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-[#172033] hover:bg-[#202c46] border border-[#28385e] hover:border-[#4a72ff] rounded-lg text-xs font-bold text-[#719df0] hover:text-white transition-all cursor-pointer shadow-sm"
-            title="게임 시작 전 아군 채팅창에 붙여넣을 1줄 핵심 브리핑"
+            title={lang === 'ko' ? '게임 시작 전 아군 채팅창에 붙여넣을 1줄 핵심 브리핑' : '1-line tactical order ready to paste into team chat'}
           >
             {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-            <span>{copied ? '복사 완료! (Ctrl+V)' : '팀 채팅용 1줄 오더 복사'}</span>
+            <span>{copied ? t('copied') : t('copyChat')}</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Three-Line Macro Roadmap (초반, 중반, 주의점) */}
+      {/* 2. Three-Line Macro Roadmap (Early, Mid, Danger Zone) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Step 1: Early / Objective */}
         <div className="bg-[#0e121a] border border-[#1a2130] p-3 rounded-lg space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-amber-400">
-            <span>1. 초반 동선 (0~14분)</span>
-            <span className="text-[10px] text-gray-500 font-normal">오브젝트 우선순위</span>
+            <span>{t('step1Title')}</span>
+            <span className="text-[10px] text-gray-500 font-normal">{t('step1Tag')}</span>
           </div>
           <p className="text-xs text-gray-200 font-medium leading-snug">
             {winCondition.earlyGame.objectiveFocus}
@@ -127,11 +137,11 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         {/* Step 2: Mid / Teamfight */}
         <div className="bg-[#0e121a] border border-[#1a2130] p-3 rounded-lg space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-[#4a72ff]">
-            <span>2. 한타/중반 오더 (15~25분)</span>
-            <span className="text-[10px] text-gray-500 font-normal">교전 설계</span>
+            <span>{t('step2Title')}</span>
+            <span className="text-[10px] text-gray-500 font-normal">{t('step2Tag')}</span>
           </div>
           <p className="text-xs text-gray-200 font-medium leading-snug">
-            {teamfight.winner === 'blue' ? '5:5 강제 교전 유도 (블루 한타 대승)' : '사이드 분산 및 각개격파'}
+            {teamfight.winner === 'blue' ? t('blueWinTeamfight') : t('redAvoidTeamfight')}
           </p>
           <p className="text-[11px] text-gray-400 line-clamp-2">
             {aiResult?.teamfightVerdict?.blueFocusTarget || teamfight.bluePlan}
@@ -141,11 +151,11 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         {/* Step 3: Threat to avoid */}
         <div className="bg-[#0e121a] border border-[#1a2130] p-3 rounded-lg space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-[#e0455f]">
-            <span>3. 패배 위험 구간 (주의점)</span>
-            <span className="text-[10px] text-gray-500 font-normal">역전 방지</span>
+            <span>{t('step3Title')}</span>
+            <span className="text-[10px] text-gray-500 font-normal">{t('step3Tag')}</span>
           </div>
           <p className="text-xs text-gray-200 font-medium leading-snug">
-            {analysis.blueStats.warnings[0] || '무리한 바론 버스트 및 잘라먹기 주의'}
+            {analysis.blueStats.warnings[0] || (lang === 'ko' ? '무리한 바론 버스트 및 잘라먹기 주의' : 'Avoid overextending at Baron and being picked off')}
           </p>
           <p className="text-[11px] text-gray-400 line-clamp-2">
             {aiResult?.teamfightVerdict?.redThreatsToAvoid || teamfight.redThreats}
@@ -159,7 +169,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#18202d] pb-2.5">
           <div className="flex items-center gap-2">
             <UserCheck size={14} className="text-[#4a72ff]" />
-            <span className="text-xs font-bold text-gray-200">내 포지션 맞춤 미션:</span>
+            <span className="text-xs font-bold text-gray-200">{t('myRoleFocus')}</span>
             <div className="flex items-center gap-1">
               {roles.map(r => (
                 <button
@@ -171,14 +181,14 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
                       : 'bg-[#151a26] text-gray-400 hover:text-white'
                   }`}
                 >
-                  {ROLE_LABELS[r]}
+                  {getRoleName(r)}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="text-[11px] text-gray-400">
-            추천 스펠: <span className="text-amber-300 font-semibold">{buildAdvice.recommendedSpell}</span>
+            {t('recommendedSpell')} <span className="text-amber-300 font-semibold">{buildAdvice.recommendedSpell}</span>
           </div>
         </div>
 
@@ -186,7 +196,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs bg-[#131824] p-2 rounded border border-[#1c2436]">
           <div className="flex items-center gap-2">
             <span className="font-bold text-white">
-              {myChamp ? myChamp.nameKo : '내 챔피언'} vs {enemyChamp ? enemyChamp.nameKo : '상대'}
+              {myChamp ? getChampName(myChamp) : (lang === 'ko' ? '내 챔피언' : 'My Champion')} vs {enemyChamp ? getChampName(enemyChamp) : (lang === 'ko' ? '상대' : 'Opponent')}
             </span>
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
@@ -197,7 +207,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
                   : 'bg-gray-800 text-gray-400'
               }`}
             >
-              {myMatchup?.favored === 'blue' ? '주도권 우세' : myMatchup?.favored === 'red' ? '상대 주도권' : '호각'}
+              {myMatchup?.favored === 'blue' ? t('laneLeadBlue') : myMatchup?.favored === 'red' ? t('laneLeadRed') : t('laneLeadEven')}
             </span>
           </div>
           <span className="text-gray-300 text-[11px]">{myMatchup?.tip}</span>
@@ -210,32 +220,32 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
             <div className="flex items-center justify-between text-xs font-bold text-[#719df0] border-b border-[#18202d] pb-1">
               <span className="flex items-center gap-1">
                 <ShieldCheck size={13} className="text-sky-400" />
-                적 조합 카운터 룬 & 빌드 추천
+                {t('runesAndBuildTitle')}
               </span>
-              <span className="text-[10px] text-gray-500 font-normal">적 특성 맞춤 대응</span>
+              <span className="text-[10px] text-gray-500 font-normal">{t('runesAndBuildTag')}</span>
             </div>
 
             {/* Runes */}
             <div className="space-y-1 text-xs">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-gray-400">보조 룬 트리:</span>
+                <span className="text-gray-400">{t('secondaryTree')}</span>
                 <span className="font-semibold text-white">{buildAdvice.secondaryRunes.treeName}</span>
               </div>
               <p className="text-[11px] text-amber-200/90 font-medium">
                 {buildAdvice.secondaryRunes.runes.join(' + ')}
               </p>
               <p className="text-[10px] text-gray-400">
-                이유: {buildAdvice.secondaryRunes.reason}
+                {t('reason')} {buildAdvice.secondaryRunes.reason}
               </p>
               <div className="text-[10px] text-gray-500">
-                추천 파편: {buildAdvice.shards}
+                {t('statShards')} {buildAdvice.shards}
               </div>
             </div>
 
             {/* Situational Items */}
             <div className="border-t border-[#18202d] pt-1.5 space-y-1">
               <span className="text-[11px] font-bold text-gray-300 block">
-                상황별 핵심 코어 템:
+                {t('situationalCoreItems')}
               </span>
               <div className="space-y-1">
                 {buildAdvice.situationalCoreItems.map((item, idx) => (
@@ -252,7 +262,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
                               : 'bg-sky-950 text-sky-300 border border-sky-800'
                           }`}
                         >
-                          {item.priority}
+                          {lang === 'en' ? (item.priority === '필수' ? 'Core' : 'Rec') : item.priority}
                         </span>
                         <strong className="text-white font-semibold">{item.name}</strong>
                       </div>
@@ -272,46 +282,49 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
             <div className="flex items-center justify-between text-xs font-bold text-emerald-400 border-b border-[#18202d] pb-1">
               <span className="flex items-center gap-1">
                 <Target size={13} className="text-emerald-400" />
-                상대 ({enemyChamp ? enemyChamp.nameKo : '적'}) 카운터픽 TOP 3
+                {t('countersTop3Title', { champ: enemyChamp ? getChampName(enemyChamp) : (lang === 'ko' ? '적' : 'Enemy') })}
               </span>
-              <span className="text-[10px] text-gray-500 font-normal">라인 상성 우위</span>
+              <span className="text-[10px] text-gray-500 font-normal">{t('countersTop3Tag')}</span>
             </div>
 
             {enemyChamp && counterPicks.length > 0 ? (
               <div className="space-y-1.5">
-                {counterPicks.map((cp, idx) => (
-                  <div
-                    key={cp.champion.id}
-                    className="p-1.5 rounded bg-[#151b27] border border-[#212a3d] text-xs flex items-start gap-2"
-                  >
-                    <img
-                      src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${cp.champion.id}.png`}
-                      alt={cp.champion.nameKo}
-                      className="w-7 h-7 rounded object-cover shrink-0 mt-0.5"
-                      onError={e => { (e.target as HTMLElement).style.display = 'none'; }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-white text-[11px]">
-                          {idx + 1}. {cp.champion.nameKo}
-                        </span>
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-400 font-mono font-bold border border-emerald-800/40">
-                          {cp.winRateAdvantage}
-                        </span>
+                {counterPicks.map((cp, idx) => {
+                  const champName = getChampName(cp.champion);
+                  return (
+                    <div
+                      key={cp.champion.id}
+                      className="p-1.5 rounded bg-[#151b27] border border-[#212a3d] text-xs flex items-start gap-2"
+                    >
+                      <img
+                        src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${cp.champion.id}.png`}
+                        alt={champName}
+                        className="w-7 h-7 rounded object-cover shrink-0 mt-0.5"
+                        onError={e => { (e.target as HTMLElement).style.display = 'none'; }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white text-[11px]">
+                            {idx + 1}. {champName}
+                          </span>
+                          <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-400 font-mono font-bold border border-emerald-800/40">
+                            {cp.winRateAdvantage}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-300 leading-tight mt-0.5">
+                          {cp.tacticalReason}
+                        </p>
+                        <p className="text-[9px] text-gray-500 mt-0.5">
+                          {t('timing')} {cp.spikeTip}
+                        </p>
                       </div>
-                      <p className="text-[10px] text-gray-300 leading-tight mt-0.5">
-                        {cp.tacticalReason}
-                      </p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">
-                        타이밍: {cp.spikeTip}
-                      </p>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="py-8 text-center text-xs text-gray-500">
-                상대 {ROLE_LABELS[selectedMyRole]} 챔피언이 선택되면 실시간 최적 카운터가 표시됩니다.
+                {t('countersPlaceholder', { role: getRoleName(selectedMyRole) })}
               </div>
             )}
           </div>
@@ -323,7 +336,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
         {/* Lane Advantage Strip */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-[11px] font-bold text-gray-400 shrink-0">
-            전 라인 유불리:
+            {t('laneAdvantage')}
           </span>
           <div className="flex items-center gap-1.5 flex-wrap">
             {laneMatchups.map(m => (
@@ -337,7 +350,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
                     : 'bg-gray-800 text-gray-400 border-gray-700'
                 }`}
               >
-                {m.roleName}: {m.favored === 'blue' ? '블루' : m.favored === 'red' ? '레드' : '호각'}
+                {getRoleName(m.role)}: {m.favored === 'blue' ? (lang === 'en' ? 'Blue' : '블루') : m.favored === 'red' ? (lang === 'en' ? 'Red' : '레드') : (lang === 'en' ? 'Even' : '호각')}
               </span>
             ))}
           </div>
@@ -348,7 +361,7 @@ export const QuickBriefingCard: React.FC<QuickBriefingCardProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[11px] font-bold text-[#e0455f] shrink-0 flex items-center gap-1">
               <ShieldAlert size={12} />
-              적 핵심 주의 스킬:
+              {t('keyThreatSkills')}
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
               {topThreats.map((t, idx) => (

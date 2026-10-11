@@ -18,6 +18,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { AICoachPanel } from './components/AICoachPanel';
 import { LaneCounterAdvisorCard } from './components/LaneCounterAdvisorCard';
 import { CHAMPIONS } from './data/champions';
+import { useLanguage } from './context/LanguageContext';
 import { AlertCircle, Radio, Zap, Layers, Sparkles } from 'lucide-react';
 
 const EMPTY_DRAFT: TeamDraft = {
@@ -31,6 +32,7 @@ const EMPTY_DRAFT: TeamDraft = {
 const ROLES: Role[] = ['TOP', 'JUG', 'MID', 'BOT', 'SUP'];
 
 export function App() {
+  const { lang, t } = useLanguage();
   // Input Mode: 'manual' (Ultra-fast manual 1-click pick) vs 'live' (Riot Spectator API)
   const [inputMode, setInputMode] = useState<'manual' | 'live'>('manual');
 
@@ -292,7 +294,7 @@ export function App() {
               }`}
             >
               <Zap size={13} />
-              <span>1분 초간단 브리핑 (로딩창 추천)</span>
+              <span>{t('quickMode')}</span>
             </button>
             <button
               onClick={() => setViewMode('detailed')}
@@ -303,12 +305,12 @@ export function App() {
               }`}
             >
               <Layers size={13} />
-              <span>상세 분석 모드</span>
+              <span>{t('detailedMode')}</span>
             </button>
           </div>
 
           <span className="text-[11px] text-gray-500 hidden sm:inline mr-2">
-            {inputMode === 'manual' ? '수동 빠른 픽 모드 활성화됨 (클릭 시 자동 다음 슬롯 이동)' : '라이브 인게임 조회 모드'}
+            {inputMode === 'manual' ? t('manualModeNotice') : t('liveModeNotice')}
           </span>
         </div>
 
@@ -321,11 +323,11 @@ export function App() {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded bg-[#4a72ff]" />
                   <span className="font-extrabold text-xs tracking-wider text-[#4a72ff]">
-                    BLUE TEAM
+                    {t('blueTeam')}
                   </span>
-                  <span className="text-[11px] text-gray-400 font-medium">우리 팀</span>
+                  <span className="text-[11px] text-gray-400 font-medium">{t('ourTeam')}</span>
                 </div>
-                <span className="text-[10px] text-gray-500">슬롯 클릭 시 픽 대상 지정</span>
+                <span className="text-[10px] text-gray-500">{t('slotInstruction')}</span>
               </div>
               <div className="space-y-1">
                 {ROLES.map(role => {
@@ -357,11 +359,11 @@ export function App() {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded bg-[#e0455f]" />
                   <span className="font-extrabold text-xs tracking-wider text-[#e0455f]">
-                    RED TEAM
+                    {t('redTeam')}
                   </span>
-                  <span className="text-[11px] text-gray-400 font-medium">상대 팀</span>
+                  <span className="text-[11px] text-gray-400 font-medium">{t('enemyTeam')}</span>
                 </div>
-                <span className="text-[10px] text-gray-500">슬롯 클릭 시 픽 대상 지정</span>
+                <span className="text-[10px] text-gray-500">{t('slotInstruction')}</span>
               </div>
               <div className="space-y-1">
                 {ROLES.map(role => {
@@ -451,7 +453,7 @@ export function App() {
       {/* Footer */}
       <footer className="border-t border-[#1a2130] py-3 px-4 text-center text-[10px] text-gray-500 bg-[#0a0d14]">
         <p>
-          Draft.gg - 5:5 솔로랭크 밴픽 & 인게임 초고속 1분 코치 도구
+          {t('footerText')}
         </p>
       </footer>
 

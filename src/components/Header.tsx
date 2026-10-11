@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import { PRESET_COMPS, PresetComp } from '../data/presets';
-import { RotateCcw, ArrowLeftRight, Settings, Search, Bot, Loader2, MousePointerClick, Radio } from 'lucide-react';
+import { PresetComp, PRESET_COMPS } from '../data/presets';
+import { useLanguage } from '../context/LanguageContext';
+import {
+  RotateCcw,
+  ArrowLeftRight,
+  Settings,
+  HelpCircle,
+  Radio,
+  Search,
+  Loader2,
+  MousePointerClick,
+  Bot,
+  Languages
+} from 'lucide-react';
 
 interface HeaderProps {
   inputMode: 'manual' | 'live';
@@ -9,7 +21,7 @@ interface HeaderProps {
   onReset: () => void;
   onSwapTeams: () => void;
   onOpenSettings: () => void;
-  onSearchLiveGame: (query: string) => void;
+  onSearchLiveGame: (summonerQuery: string) => void;
   isSearchingLiveGame: boolean;
   onTriggerAI: () => void;
   isAILoading: boolean;
@@ -27,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   onTriggerAI,
   isAILoading
 }) => {
+  const { lang, setLang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -36,9 +49,9 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const handleQuickSample = (name: string) => {
-    setSearchQuery(name);
-    onSearchLiveGame(name);
+  const handleQuickSample = (query: string) => {
+    setSearchQuery(query);
+    onSearchLiveGame(query);
   };
 
   return (
@@ -52,14 +65,14 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-black text-white tracking-tight">
-                Draft<span className="text-[#4a72ff]">.gg</span>
+                {t('brandTitle')}<span className="text-[#4a72ff]">{t('brandSuffix')}</span>
               </span>
               <span className="px-1.5 py-0.2 rounded bg-[#4a72ff]/20 text-[#719df0] border border-[#4a72ff]/40 text-[9px] font-bold font-mono">
-                AI
+                {t('brandBadge')}
               </span>
             </div>
             <p className="text-[10px] text-gray-500">
-              5:5 솔로랭크 밴픽 & 인게임 1분 코치
+              {t('brandSubtitle')}
             </p>
           </div>
 
@@ -72,10 +85,10 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'bg-[#4a72ff] text-white shadow-sm'
                   : 'text-gray-400 hover:text-white'
               }`}
-              title="원클릭으로 챔피언을 직접 빠르게 선택하는 모드"
+              title={lang === 'ko' ? '원클릭으로 챔피언을 직접 빠르게 선택하는 모드' : '1-click rapid manual champion pick mode'}
             >
               <MousePointerClick size={12} />
-              <span>수동 픽 모드</span>
+              <span>{t('manualMode')}</span>
             </button>
             <button
               onClick={() => onToggleInputMode('live')}
@@ -84,10 +97,10 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'bg-[#4a72ff] text-white shadow-sm'
                   : 'text-gray-400 hover:text-white'
               }`}
-              title="소환사명을 검색하여 현재 진행 중인 게임 10명을 자동 로드하는 모드"
+              title={lang === 'ko' ? '소환사명을 검색하여 현재 진행 중인 게임 10명을 자동 로드하는 모드' : 'Search summoner to inspect active live game'}
             >
               <Radio size={12} />
-              <span>라이브 인게임 모드</span>
+              <span>{t('liveMode')}</span>
             </button>
           </div>
         </div>
@@ -103,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="소환사명#태그 (예: Hide on bush#KR1)"
+                placeholder={t('summonerPlaceholder')}
                 className="w-full pl-14 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none"
               />
               <button
@@ -112,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="absolute right-1 px-2 py-1 bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer"
               >
                 {isSearchingLiveGame ? <Loader2 size={11} className="animate-spin" /> : <Search size={11} />}
-                <span>조회</span>
+                <span>{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
               </button>
             </form>
 
@@ -135,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         ) : (
           <div className="hidden md:flex items-center gap-2 text-xs text-gray-400">
-            <span>슬롯을 클릭하거나 하단 추천 챔피언을 눌러 즉시 픽하세요.</span>
+            <span>{lang === 'ko' ? '슬롯을 클릭하거나 하단 추천 챔피언을 눌러 즉시 픽하세요.' : 'Click slots or click recommended champions below to pick instantly.'}</span>
           </div>
         )}
 
@@ -146,10 +159,10 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onTriggerAI}
             disabled={isAILoading}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#4a72ff] hover:bg-[#3b62ee] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
-            title="AI 심층 분석 실행"
+            title={lang === 'ko' ? 'AI 심층 분석 실행' : 'Trigger AI comp analysis'}
           >
             {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Bot size={12} />}
-            <span>AI 분석</span>
+            <span>{isAILoading ? t('analyzingAI') : t('reanalyzeAI')}</span>
           </button>
 
           {/* Preset Comps Dropdown */}
@@ -164,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] text-xs text-gray-300 py-1.5 px-2 rounded-lg focus:outline-none transition-colors cursor-pointer"
             >
               <option value="" disabled>
-                프리셋
+                {t('presetSample')}
               </option>
               {PRESET_COMPS.map(p => (
                 <option key={p.id} value={p.id}>
@@ -178,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onSwapTeams}
             className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title="진영 맞바꾸기"
+            title={t('swapTeams')}
           >
             <ArrowLeftRight size={13} />
           </button>
@@ -187,16 +200,26 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onReset}
             className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title="초기화"
+            title={t('resetDraft')}
           >
             <RotateCcw size={13} />
+          </button>
+
+          {/* Language Switcher Toggle */}
+          <button
+            onClick={() => setLang(lang === 'ko' ? 'en' : 'ko')}
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] hover:border-[#4a72ff] text-xs font-bold text-gray-300 hover:text-white transition-colors cursor-pointer"
+            title={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+          >
+            <Languages size={13} className="text-[#4a72ff]" />
+            <span className="font-mono text-[11px]">{lang.toUpperCase()}</span>
           </button>
 
           {/* Settings */}
           <button
             onClick={onOpenSettings}
             className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title="API 키 설정"
+            title={t('settings')}
           >
             <Settings size={13} />
           </button>

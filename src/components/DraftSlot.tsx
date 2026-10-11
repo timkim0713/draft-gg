@@ -1,6 +1,6 @@
 import React from 'react';
 import { Champion, Role } from '../types';
-import { ROLE_LABELS } from '../data/champions';
+import { useLanguage } from '../context/LanguageContext';
 import { Plus, X, Shield, Wand2, Crosshair, Sparkles } from 'lucide-react';
 
 interface DraftSlotProps {
@@ -26,8 +26,12 @@ export const DraftSlot: React.FC<DraftSlotProps> = ({
   onClick,
   onClear
 }) => {
+  const { lang, getRoleName, t } = useLanguage();
   const isBlue = team === 'blue';
-  const roleName = ROLE_LABELS[role];
+  const roleName = getRoleName(role);
+
+  const primaryName = champion ? (lang === 'en' ? champion.name : champion.nameKo) : '';
+  const secondaryName = champion ? (lang === 'en' ? champion.nameKo : champion.name) : '';
 
   return (
     <div className="relative group">
@@ -52,7 +56,7 @@ export const DraftSlot: React.FC<DraftSlotProps> = ({
           {champion ? (
             <img
               src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/champion/${champion.id}.png`}
-              alt={champion.nameKo}
+              alt={primaryName}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
             />
           ) : (
@@ -81,10 +85,10 @@ export const DraftSlot: React.FC<DraftSlotProps> = ({
             <>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-sm text-gray-100 truncate">
-                  {champion.nameKo}
+                  {primaryName}
                 </span>
                 <span className="text-[11px] text-gray-400 truncate">
-                  {champion.name}
+                  {secondaryName}
                 </span>
               </div>
               <div className="flex items-center gap-1 mt-0.5">
@@ -100,8 +104,10 @@ export const DraftSlot: React.FC<DraftSlotProps> = ({
             </>
           ) : (
             <div className="text-gray-500 text-xs">
-              <span className="font-medium text-gray-400">챔피언 선택</span>
-              <p className="text-[11px] text-gray-600 mt-0.5">클릭하여 선택</p>
+              <span className="font-medium text-gray-400">{t('selectChampion')}</span>
+              <p className="text-[11px] text-gray-600 mt-0.5">
+                {lang === 'ko' ? '클릭하여 선택' : 'Click to select'}
+              </p>
             </div>
           )}
         </div>
@@ -115,7 +121,7 @@ export const DraftSlot: React.FC<DraftSlotProps> = ({
             onClear();
           }}
           className="absolute right-2 top-2 p-1 rounded-full bg-black/60 hover:bg-red-600 text-gray-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
-          title="챔피언 제거"
+          title={lang === 'ko' ? '챔피언 제거' : 'Remove champion'}
         >
           <X size={13} />
         </button>
