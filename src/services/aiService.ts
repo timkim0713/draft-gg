@@ -137,7 +137,7 @@ function generateAnalyticFallback(blueDraft: TeamDraft, redDraft: TeamDraft): AI
   }
 
   return {
-    modelName: 'DeepLoL AI Analytic Coach',
+    modelName: 'Draft.gg Analytic Coach',
     summary: base.headline,
     favoredTeam: base.favoredTeam,
     blueWinRate: base.blueWinRate,

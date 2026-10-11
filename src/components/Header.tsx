@@ -47,16 +47,19 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand & Mode Switcher */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-[#4a72ff] flex items-center justify-center text-white font-extrabold text-sm tracking-wider shadow-sm">
-            DL
+            GG
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-extrabold text-white tracking-tight">
-                DeepLoL Comp AI
+              <span className="text-sm font-black text-white tracking-tight">
+                Draft<span className="text-[#4a72ff]">.gg</span>
+              </span>
+              <span className="px-1.5 py-0.2 rounded bg-[#4a72ff]/20 text-[#719df0] border border-[#4a72ff]/40 text-[9px] font-bold font-mono">
+                AI
               </span>
             </div>
             <p className="text-[10px] text-gray-500">
-              5:5 솔로랭크 픽창 및 인게임 분석기
+              5:5 솔로랭크 밴픽 & 인게임 1분 코치
             </p>
           </div>
 

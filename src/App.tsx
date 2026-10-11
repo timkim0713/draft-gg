@@ -451,7 +451,7 @@ export function App() {
       {/* Footer */}
       <footer className="border-t border-[#1a2130] py-3 px-4 text-center text-[10px] text-gray-500 bg-[#0a0d14]">
         <p>
-          DeepLoL Comp AI - 5:5 솔로랭크 픽창 및 인게임 초고속 1분 브리핑 도구
+          Draft.gg - 5:5 솔로랭크 밴픽 & 인게임 초고속 1분 코치 도구
         </p>
       </footer>
 

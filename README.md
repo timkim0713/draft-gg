@@ -1,6 +1,6 @@
-# DeepLoL Comp AI (롤 5:5 솔로랭크 픽창 & 라이브 인게임 AI 분석기)
+# Draft.gg (롤 5:5 솔로랭크 밴픽 & 라이브 인게임 AI 코치)
 
-DeepLoL 및 OP.GG 감성의 미니멀 다크 UI를 적용하고, **LLM AI 모델(Gemini)** 및 **Riot Spectator API**를 연동하여 소환사의 실시간 진행 중인 게임과 픽창 조합을 정밀 분석하는 웹 애플리케이션입니다.
+OP.GG / DeepLoL 감성의 미니멀 다크 UI를 적용하고, **LLM AI 모델(Gemini)** 및 **Riot Spectator API**를 연동하여 소환사의 실시간 진행 중인 게임과 픽창 조합을 정밀 분석하는 웹 애플리케이션입니다.
 
 ---
 
