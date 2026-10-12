@@ -1,4 +1,10 @@
 // Vercel Serverless Function: /api/riot/live-game
+const REGION_MAP: Record<string, { cluster: string; platform: string; defaultTag: string }> = {
+  kr: { cluster: 'asia', platform: 'kr', defaultTag: 'KR1' },
+  na: { cluster: 'americas', platform: 'na1', defaultTag: 'NA1' },
+  euw: { cluster: 'europe', platform: 'euw1', defaultTag: 'EUW' }
+};
+
 export default async function handler(req: any, res: any) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,7 +19,10 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { gameName, tagLine = 'KR1', apiKey: queryKey } = req.query;
+  const { gameName, tagLine: rawTag, region: rawRegion = 'kr', apiKey: queryKey } = req.query;
+  const regionKey = String(rawRegion).toLowerCase();
+  const regionConfig = REGION_MAP[regionKey] || REGION_MAP.kr;
+  const tagLine = rawTag || regionConfig.defaultTag;
   const apiKey = (queryKey as string) || process.env.RIOT_API_KEY || '';
 
   if (!gameName) {
@@ -32,10 +41,10 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // 1. Account-v1 (Get PUUID by Riot ID)
+    // 1. Account-v1 (Get PUUID by Riot ID using regional cluster e.g. asia, americas, europe)
     const encodedName = encodeURIComponent(String(gameName));
     const encodedTag = encodeURIComponent(String(tagLine));
-    const accountUrl = `https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedName}/${encodedTag}`;
+    const accountUrl = `https://${regionConfig.cluster}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedName}/${encodedTag}`;
     
     const accRes = await fetch(accountUrl, {
       headers: { 'X-Riot-Token': apiKey }
@@ -45,15 +54,15 @@ export default async function handler(req: any, res: any) {
       return res.status(404).json({
         success: false,
         inGame: false,
-        message: `소환사를 찾을 수 없습니다 (${gameName}#${tagLine}). 소환사명과 태그를 확인해주세요.`
+        message: `소환사를 찾을 수 없습니다 (${gameName}#${tagLine} [${regionKey.toUpperCase()}]). 소환사명과 태그를 확인해주세요.`
       });
     }
 
     const accData: any = await accRes.json();
     const puuid = accData.puuid;
 
-    // 2. Spectator-v5 (Get Active Game)
-    const specUrl = `https://kr.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
+    // 2. Spectator-v5 (Get Active Game using platform e.g. kr, na1, euw1)
+    const specUrl = `https://${regionConfig.platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
     const specRes = await fetch(specUrl, {
       headers: { 'X-Riot-Token': apiKey }
     });

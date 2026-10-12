@@ -10,8 +10,17 @@ export function lolApiPlugin(): Plugin {
 
         // --- Route: /api/riot/live-game ---
         if (url.pathname === '/api/riot/live-game' && req.method === 'GET') {
+          const REGION_MAP: Record<string, { cluster: string; platform: string; defaultTag: string }> = {
+            kr: { cluster: 'asia', platform: 'kr', defaultTag: 'KR1' },
+            na: { cluster: 'americas', platform: 'na1', defaultTag: 'NA1' },
+            euw: { cluster: 'europe', platform: 'euw1', defaultTag: 'EUW' }
+          };
+
+          const rawRegion = url.searchParams.get('region') || 'kr';
+          const regionKey = rawRegion.toLowerCase();
+          const regionConfig = REGION_MAP[regionKey] || REGION_MAP.kr;
           const gameName = url.searchParams.get('gameName') || '';
-          const tagLine = url.searchParams.get('tagLine') || 'KR1';
+          const tagLine = url.searchParams.get('tagLine') || regionConfig.defaultTag;
           const apiKey = url.searchParams.get('apiKey') || process.env.RIOT_API_KEY || '';
 
           if (!apiKey) {
@@ -26,7 +35,7 @@ export function lolApiPlugin(): Plugin {
 
           try {
             // 1. Account-v1 (Get PUUID)
-            const accountUrl = `https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`;
+            const accountUrl = `https://${regionConfig.cluster}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`;
             const accRes = await fetch(accountUrl, {
               headers: { 'X-Riot-Token': apiKey }
             });
@@ -36,7 +45,7 @@ export function lolApiPlugin(): Plugin {
               res.end(JSON.stringify({
                 success: false,
                 inGame: false,
-                message: `소환사를 찾을 수 없습니다 (${gameName}#${tagLine}). 소환사명과 태그를 확인해주세요.`
+                message: `소환사를 찾을 수 없습니다 (${gameName}#${tagLine} [${regionKey.toUpperCase()}]). 소환사명과 태그를 확인해주세요.`
               }));
               return;
             }
@@ -45,7 +54,7 @@ export function lolApiPlugin(): Plugin {
             const puuid = accData.puuid;
 
             // 2. Spectator-v5 (Get Active Game)
-            const specUrl = `https://kr.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
+            const specUrl = `https://${regionConfig.platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
             const specRes = await fetch(specUrl, {
               headers: { 'X-Riot-Token': apiKey }
             });

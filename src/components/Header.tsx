@@ -21,7 +21,7 @@ interface HeaderProps {
   onReset: () => void;
   onSwapTeams: () => void;
   onOpenSettings: () => void;
-  onSearchLiveGame: (summonerQuery: string) => void;
+  onSearchLiveGame: (summonerQuery: string, region: 'kr' | 'na' | 'euw') => void;
   isSearchingLiveGame: boolean;
   onTriggerAI: () => void;
   isAILoading: boolean;
@@ -40,18 +40,19 @@ export const Header: React.FC<HeaderProps> = ({
   isAILoading
 }) => {
   const { lang, setLang, t } = useLanguage();
+  const [selectedRegion, setSelectedRegion] = useState<'kr' | 'na' | 'euw'>('kr');
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      onSearchLiveGame(searchQuery.trim());
+      onSearchLiveGame(searchQuery.trim(), selectedRegion);
     }
   };
 
   const handleQuickSample = (query: string) => {
     setSearchQuery(query);
-    onSearchLiveGame(query);
+    onSearchLiveGame(query, 'kr');
   };
 
   return (
@@ -109,15 +110,22 @@ export const Header: React.FC<HeaderProps> = ({
         {inputMode === 'live' ? (
           <div className="flex items-center gap-2 flex-1 max-w-md w-full animate-in fade-in">
             <form onSubmit={handleSearchSubmit} className="flex items-center flex-1 relative">
-              <span className="absolute left-2.5 text-[11px] font-bold text-gray-500 px-1 border-r border-[#242c3f] pr-2">
-                KR
-              </span>
+              <select
+                value={selectedRegion}
+                onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
+                className="absolute left-2 text-[11px] font-bold text-[#719df0] bg-[#121620] focus:outline-none cursor-pointer pr-1 border-r border-[#242c3f] z-10 py-0.5 rounded"
+                title="서버 선택 (Region)"
+              >
+                <option value="kr">KR</option>
+                <option value="na">NA</option>
+                <option value="euw">EUW</option>
+              </select>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder={t('summonerPlaceholder')}
-                className="w-full pl-14 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none"
+                className="w-full pl-16 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none"
               />
               <button
                 type="submit"

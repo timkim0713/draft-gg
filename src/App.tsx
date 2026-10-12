@@ -133,12 +133,12 @@ export function App() {
   };
 
   // Live Game Search Handler
-  const handleSearchLiveGame = async (query: string) => {
+  const handleSearchLiveGame = async (query: string, region: 'kr' | 'na' | 'euw' = 'kr') => {
     setIsSearchingLiveGame(true);
     setLiveGameNotice(null);
 
     try {
-      const res = await fetchLiveGame(query, 'kr', riotApiKey);
+      const res = await fetchLiveGame(query, region, riotApiKey);
 
       if (res.success && res.inGame && res.data) {
         const { blueDraft: b, redDraft: r } = mapLiveGameToDraft(res.data.participants);
