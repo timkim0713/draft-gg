@@ -134,13 +134,26 @@ export async function fetchLiveGame(
 
   // Attempt to call local proxy API
   try {
-    const [gameName, tagLine] = trimmed.includes('#')
-      ? trimmed.split('#')
-      : [trimmed, 'KR1'];
+    let gameName = '';
+    let tagLine = '';
+
+    if (trimmed.includes('#')) {
+      const hashIndex = trimmed.indexOf('#');
+      gameName = trimmed.substring(0, hashIndex).trim();
+      tagLine = trimmed.substring(hashIndex + 1).trim();
+    } else {
+      gameName = trimmed.trim();
+      const defaultTagMap: Record<string, string> = {
+        kr: 'KR1',
+        na: 'NA1',
+        euw: 'EUW'
+      };
+      tagLine = defaultTagMap[region.toLowerCase()] || 'NA1';
+    }
 
     const params = new URLSearchParams({
       gameName,
-      tagLine: tagLine || 'KR1',
+      tagLine,
       region
     });
     if (apiKey) params.append('apiKey', apiKey);

@@ -22,10 +22,20 @@ export default async function handler(req: any, res: any) {
   const { gameName, tagLine: rawTag, region: rawRegion = 'kr', apiKey: queryKey } = req.query;
   const regionKey = String(rawRegion).toLowerCase();
   const regionConfig = REGION_MAP[regionKey] || REGION_MAP.kr;
-  const tagLine = rawTag || regionConfig.defaultTag;
+
+  // Thorough sanitization of gameName and tagLine
+  const cleanName = String(gameName || '').trim();
+  let cleanTag = String(rawTag || '').trim();
+  if (cleanTag.startsWith('#')) {
+    cleanTag = cleanTag.substring(1).trim();
+  }
+  if (!cleanTag) {
+    cleanTag = regionConfig.defaultTag;
+  }
+
   const apiKey = (queryKey as string) || process.env.RIOT_API_KEY || '';
 
-  if (!gameName) {
+  if (!cleanName) {
     return res.status(400).json({
       success: false,
       message: '소환사명을 입력해주세요.'
@@ -41,25 +51,52 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // 1. Account-v1 (Get PUUID by Riot ID using regional cluster e.g. asia, americas, europe)
-    const encodedName = encodeURIComponent(String(gameName));
-    const encodedTag = encodeURIComponent(String(tagLine));
-    const accountUrl = `https://${regionConfig.cluster}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedName}/${encodedTag}`;
-    
-    const accRes = await fetch(accountUrl, {
-      headers: { 'X-Riot-Token': apiKey }
-    });
+    // 1. Account-v1 (Get PUUID by Riot ID using regional clusters: americas, asia, europe)
+    const encodedName = encodeURIComponent(cleanName);
+    const encodedTag = encodeURIComponent(cleanTag);
 
-    if (!accRes.ok) {
+    const primaryCluster = regionConfig.cluster;
+    const fallbackClusters = ['americas', 'asia', 'europe'].filter(c => c !== primaryCluster);
+    const clustersToTry = [primaryCluster, ...fallbackClusters];
+
+    let puuid: string | null = null;
+
+    for (const cluster of clustersToTry) {
+      const accountUrl = `https://${cluster}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedName}/${encodedTag}`;
+      const accRes = await fetch(accountUrl, {
+        headers: { 'X-Riot-Token': apiKey }
+      });
+
+      if (accRes.status === 401 || accRes.status === 403) {
+        return res.status(accRes.status).json({
+          success: false,
+          inGame: false,
+          message: 'Riot API Key가 유효하지 않거나 24시간 만료되었습니다. Riot 개발자 포털(developer.riotgames.com)에서 새로 발급받아 우측 상단 [설정]에 등록해주세요.'
+        });
+      }
+
+      if (accRes.status === 429) {
+        return res.status(429).json({
+          success: false,
+          inGame: false,
+          message: 'Riot API 호출 한도 초과 (Rate Limit). 잠시 후 다시 시도해주세요.'
+        });
+      }
+
+      if (accRes.ok) {
+        const accData: any = await accRes.json();
+        puuid = accData.puuid;
+        break;
+      }
+    }
+
+    if (!puuid) {
       return res.status(404).json({
         success: false,
         inGame: false,
-        message: `소환사를 찾을 수 없습니다 (${gameName}#${tagLine} [${regionKey.toUpperCase()}]). 소환사명과 태그를 확인해주세요.`
+        message: `소환사를 찾을 수 없습니다 (${cleanName}#${cleanTag} [${regionKey.toUpperCase()}]). 소환사명과 태그를 확인해주세요.`
       });
     }
-
-    const accData: any = await accRes.json();
-    const puuid = accData.puuid;
 
     // 2. Spectator-v5 (Get Active Game using platform e.g. kr, na1, euw1)
     const specUrl = `https://${regionConfig.platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
@@ -67,11 +104,19 @@ export default async function handler(req: any, res: any) {
       headers: { 'X-Riot-Token': apiKey }
     });
 
+    if (specRes.status === 401 || specRes.status === 403) {
+      return res.status(specRes.status).json({
+        success: false,
+        inGame: false,
+        message: 'Riot API Key가 유효하지 않거나 24시간 만료되었습니다. Riot 개발자 포털에서 키를 재발급받아주세요.'
+      });
+    }
+
     if (specRes.status === 404) {
       return res.status(200).json({
         success: true,
         inGame: false,
-        message: `${gameName}#${tagLine} 님은 현재 진행 중인 게임이 없습니다.`
+        message: `${cleanName}#${cleanTag} 님은 현재 진행 중인 게임이 없습니다.`
       });
     }
 
@@ -92,10 +137,10 @@ export default async function handler(req: any, res: any) {
         gameId: gameData.gameId,
         gameMode: gameData.gameMode,
         gameLength: gameData.gameLength,
-        summonerQuery: `${gameName}#${tagLine}`,
+        summonerQuery: `${cleanName}#${cleanTag}`,
         participants: gameData.participants.map((p: any) => ({
           summonerName: p.summonerName || p.riotId || 'Player',
-          riotId: p.riotId,
+          riotId: p.riotId || p.summonerName || 'Player',
           teamId: p.teamId,
           championId: p.championId,
           spell1Id: p.spell1Id,
