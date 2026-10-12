@@ -110,36 +110,38 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Live Search Bar (Always prominent and centered in the header!) */}
-        <div className="flex items-center gap-2 flex-1 max-w-xl w-full">
-          <form onSubmit={handleSearchSubmit} className="flex items-center flex-1 relative">
-            <select
-              value={selectedRegion}
-              onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
-              className="absolute left-2 text-[11px] font-bold text-[#719df0] bg-[#121620] focus:outline-none cursor-pointer pr-1 border-r border-[#242c3f] z-10 py-0.5 rounded"
-              title="서버 선택 (Region)"
-            >
-              <option value="kr">KR</option>
-              <option value="na">NA</option>
-              <option value="euw">EUW</option>
-            </select>
+        <div className="flex items-center gap-2 flex-1 max-w-md xl:max-w-xl w-full min-w-0">
+          <form onSubmit={handleSearchSubmit} className="flex items-center w-full bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus-within:border-[#4a72ff] focus-within:ring-1 focus-within:ring-[#4a72ff] rounded-lg overflow-hidden transition-all shadow-inner">
+            <div className="flex items-center bg-[#161c28] border-r border-[#222a3d] px-2 py-1.5 shrink-0">
+              <select
+                value={selectedRegion}
+                onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
+                className="bg-transparent text-[11px] font-bold text-[#719df0] focus:outline-none cursor-pointer"
+                title={lang === 'ko' ? '서버 선택 (Region)' : 'Select Region'}
+              >
+                <option value="kr" className="bg-[#121620] text-white">KR</option>
+                <option value="na" className="bg-[#121620] text-white">NA</option>
+                <option value="euw" className="bg-[#121620] text-white">EUW</option>
+              </select>
+            </div>
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={t('summonerPlaceholder')}
-              className="w-full pl-16 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none shadow-inner"
+              className="flex-1 min-w-0 px-3 py-1.5 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none"
             />
             <button
               type="submit"
               disabled={isSearchingLiveGame}
-              className="absolute right-1 px-2.5 py-1 bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer shadow-sm"
+              className="bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-xs font-bold px-3 py-1.5 flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
             >
-              {isSearchingLiveGame ? <Loader2 size={11} className="animate-spin" /> : <Search size={11} />}
-              <span>{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
+              {isSearchingLiveGame ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
+              <span className="hidden sm:inline">{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
             </button>
           </form>
 
-          <div className="hidden sm:flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
+          <div className="hidden 2xl:flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
             <button
               type="button"
               onClick={() => handleQuickSample('Hide on bush#KR1')}
@@ -160,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1.5 shrink-0 w-full lg:w-auto justify-end">
+        <div className="flex items-center gap-1.5 shrink-0 justify-end">
           {/* AI Analyze Trigger */}
           <button
             onClick={onTriggerAI}

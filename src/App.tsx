@@ -17,6 +17,7 @@ import { ChampionSelectModal } from './components/ChampionSelectModal';
 import { SettingsModal } from './components/SettingsModal';
 import { AICoachPanel } from './components/AICoachPanel';
 import { LaneCounterAdvisorCard } from './components/LaneCounterAdvisorCard';
+import { LiveGameSearchCard } from './components/LiveGameSearchCard';
 import { CHAMPIONS } from './data/champions';
 import { useLanguage } from './context/LanguageContext';
 import { AlertCircle, Radio, Zap, Layers, Sparkles } from 'lucide-react';
@@ -57,6 +58,7 @@ export function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSearchingLiveGame, setIsSearchingLiveGame] = useState(false);
   const [liveGameNotice, setLiveGameNotice] = useState<{ type: 'success' | 'info' | 'error'; message: string } | null>(null);
+  const [activeLiveGame, setActiveLiveGame] = useState<LiveGameInfo | null>(null);
 
   // AI Analysis States
   const [aiResult, setAiResult] = useState<AIAnalysisResult | null>(null);
@@ -144,18 +146,21 @@ export function App() {
         const { blueDraft: b, redDraft: r } = mapLiveGameToDraft(res.data.participants);
         setBlueDraft(b);
         setRedDraft(r);
+        setActiveLiveGame(res.data);
         setLiveGameNotice({
           type: 'success',
           message: `라이브 인게임 데이터 연동 완료: ${res.data.summonerQuery} (${res.data.gameMode})`
         });
         triggerAIAnalysis(b, r);
       } else {
+        setActiveLiveGame(null);
         setLiveGameNotice({
           type: res.inGame ? 'info' : 'error',
           message: res.message || '인게임 정보를 찾을 수 없습니다.'
         });
       }
     } catch {
+      setActiveLiveGame(null);
       setLiveGameNotice({
         type: 'error',
         message: '서버 통신 오류가 발생했습니다.'
@@ -218,6 +223,7 @@ export function App() {
     setBlueDraft({ ...EMPTY_DRAFT });
     setRedDraft({ ...EMPTY_DRAFT });
     setLiveGameNotice(null);
+    setActiveLiveGame(null);
     setActiveSlot({ team: 'blue', role: 'TOP' });
   };
 
@@ -233,6 +239,7 @@ export function App() {
     setBlueDraft(preset.blueDraft);
     setRedDraft(preset.redDraft);
     setLiveGameNotice(null);
+    setActiveLiveGame(null);
     triggerAIAnalysis(preset.blueDraft, preset.redDraft);
   };
 
@@ -313,6 +320,17 @@ export function App() {
             {inputMode === 'manual' ? t('manualModeNotice') : t('liveModeNotice')}
           </span>
         </div>
+
+        {/* Dedicated Live In-Game Search Section (High Visibility) */}
+        {inputMode === 'live' && (
+          <LiveGameSearchCard
+            onSearch={handleSearchLiveGame}
+            isSearching={isSearchingLiveGame}
+            activeLiveGame={activeLiveGame}
+            hasApiKey={Boolean(riotApiKey)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        )}
 
         {/* 5v5 Draft Pick Section */}
         <section className="bg-[#121620] border border-[#202738] rounded-xl p-3 sm:p-3.5 shadow-lg">

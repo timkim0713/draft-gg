@@ -20,6 +20,16 @@ export const TRANSLATIONS = {
     reanalyzeAI: 'AI 재분석',
     analyzingAI: '분석 중...',
     sampleInGame: '샘플 인게임 로드',
+
+    // Live Search Card
+    liveSearchTitle: '라이브 인게임 솔로랭크 자동 조회',
+    liveSearchSubtitle: '소환사명과 태그(Riot ID)를 입력하여 현재 진행 중인 게임 10명의 챔피언과 룬 세팅을 실시간으로 자동 로드합니다.',
+    liveSearchBtn: '인게임 조회',
+    quickProSamples: '1클릭 프로 선수 샘플:',
+    liveGameActive: '라이브 인게임 연동 활성',
+    liveGameDuration: '진행 시간:',
+    liveGameMode: '게임 모드:',
+    noApiKeyNotice: 'Riot 개발자 API 키가 필요하신가요? 우측 상단 [설정]에서 무료 발급 키를 입력하시거나, 아래 프로 선수 샘플을 클릭하여 즉시 체험할 수 있습니다.',
     
     // View Modes
     quickMode: '1분 초간단 브리핑 (로딩창 추천)',
@@ -116,6 +126,16 @@ export const TRANSLATIONS = {
     reanalyzeAI: 'Analyze AI',
     analyzingAI: 'Analyzing...',
     sampleInGame: 'Load Sample Game',
+
+    // Live Search Card
+    liveSearchTitle: 'Live SoloQ Game Spectator Search',
+    liveSearchSubtitle: 'Enter Summoner Name and Tag (Riot ID) to automatically load all 10 champions and runes from active match.',
+    liveSearchBtn: 'Search Live Game',
+    quickProSamples: '1-Click Pro Samples:',
+    liveGameActive: 'Live Game Connected',
+    liveGameDuration: 'Game Time:',
+    liveGameMode: 'Mode:',
+    noApiKeyNotice: 'Need a Riot API key? Add your free key in Settings, or click the pro player presets below to test live analysis immediately.',
 
     // View Modes
     quickMode: '1-Min Quick Briefing (Loading Screen)',
