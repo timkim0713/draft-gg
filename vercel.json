@@ -12,7 +12,7 @@
     },
     {
       "source": "/(.*)riot.txt",
-      "destination": "/riot.txt"
+      "destination": "/api/riot-txt"
     },
     {
       "source": "/(.*)",
