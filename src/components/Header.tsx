@@ -50,17 +50,11 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const handleQuickSample = (query: string) => {
-    setSearchQuery(query);
-    onToggleInputMode('live');
-    onSearchLiveGame(query, 'kr');
-  };
-
   return (
-    <header className="border-b border-[#1d2332] bg-[#0c0f16]/95 backdrop-blur sticky top-0 z-40 px-3 sm:px-4 py-2">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+    <header className="border-b border-[#1d2332] bg-[#0c0f16]/95 backdrop-blur sticky top-0 z-40 px-3 sm:px-6 py-2.5">
+      <div className="max-w-[1600px] mx-auto flex flex-col xl:flex-row items-center justify-between gap-2.5 sm:gap-3">
         {/* Brand & Mode Switcher */}
-        <div className="flex items-center gap-3 shrink-0 w-full lg:w-auto justify-between lg:justify-start">
+        <div className="flex items-center justify-between w-full xl:w-auto gap-3 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#4a72ff] flex items-center justify-center text-white font-extrabold text-sm tracking-wider shadow-sm">
               GG
@@ -109,14 +103,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Live Search Bar (Always prominent and centered in the header!) */}
-        <div className="flex items-center gap-2 flex-1 max-w-md xl:max-w-xl w-full min-w-0">
-          <form onSubmit={handleSearchSubmit} className="flex items-center w-full bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus-within:border-[#4a72ff] focus-within:ring-1 focus-within:ring-[#4a72ff] rounded-lg overflow-hidden transition-all shadow-inner">
-            <div className="flex items-center bg-[#161c28] border-r border-[#222a3d] px-2 py-1.5 shrink-0">
+        {/* Center: WIDE, PROMINENT SEARCH BAR */}
+        <div className="w-full xl:flex-1 xl:max-w-2xl px-0 xl:px-4">
+          <form onSubmit={handleSearchSubmit} className="flex items-center w-full bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus-within:border-[#4a72ff] focus-within:ring-1 focus-within:ring-[#4a72ff] rounded-lg overflow-hidden transition-all shadow-inner h-9">
+            <div className="flex items-center bg-[#161c28] border-r border-[#222a3d] px-2.5 h-full shrink-0">
               <select
                 value={selectedRegion}
                 onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
-                className="bg-transparent text-[11px] font-bold text-[#719df0] focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-bold text-[#719df0] focus:outline-none cursor-pointer"
                 title={lang === 'ko' ? '서버 선택 (Region)' : 'Select Region'}
               >
                 <option value="kr" className="bg-[#121620] text-white">KR</option>
@@ -129,48 +123,29 @@ export const Header: React.FC<HeaderProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={t('summonerPlaceholder')}
-              className="flex-1 min-w-0 px-3 py-1.5 bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none"
+              className="flex-1 min-w-[180px] sm:min-w-[260px] px-3.5 h-full bg-transparent text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none"
             />
             <button
               type="submit"
               disabled={isSearchingLiveGame}
-              className="bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-xs font-bold px-3 py-1.5 flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+              className="bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-xs font-bold px-3.5 h-full flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
             >
-              {isSearchingLiveGame ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
-              <span className="hidden sm:inline">{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
+              {isSearchingLiveGame ? <Loader2 size={13} className="animate-spin" /> : <Search size={13} />}
+              <span>{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
             </button>
           </form>
-
-          <div className="hidden 2xl:flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
-            <button
-              type="button"
-              onClick={() => handleQuickSample('Hide on bush#KR1')}
-              className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer border border-[#1f2638]"
-              title="Faker 라이브 인게임 샘플 로드"
-            >
-              Faker
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickSample('Chovy#KR1')}
-              className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer border border-[#1f2638]"
-              title="Chovy 라이브 인게임 샘플 로드"
-            >
-              Chovy
-            </button>
-          </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5 shrink-0 justify-end">
+        {/* Right side: Actions & Tools */}
+        <div className="flex items-center gap-2 shrink-0 w-full xl:w-auto justify-end">
           {/* AI Analyze Trigger */}
           <button
             onClick={onTriggerAI}
             disabled={isAILoading}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#4a72ff] hover:bg-[#3b62ee] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4a72ff] hover:bg-[#3b62ee] text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 h-8"
             title={lang === 'ko' ? 'AI 심층 분석 실행' : 'Trigger AI comp analysis'}
           >
-            {isAILoading ? <Loader2 size={12} className="animate-spin" /> : <Bot size={12} />}
+            {isAILoading ? <Loader2 size={13} className="animate-spin" /> : <Bot size={13} />}
             <span>{isAILoading ? t('analyzingAI') : t('reanalyzeAI')}</span>
           </button>
 
@@ -183,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
                 e.target.value = '';
               }}
               defaultValue=""
-              className="bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] text-xs text-gray-300 py-1.5 px-2 rounded-lg focus:outline-none transition-colors cursor-pointer"
+              className="bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] text-xs text-gray-300 py-1.5 px-2 rounded-lg focus:outline-none transition-colors cursor-pointer h-8"
             >
               <option value="" disabled>
                 {t('presetSample')}
@@ -196,42 +171,45 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {/* Swap Blue/Red */}
-          <button
-            onClick={onSwapTeams}
-            className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title={t('swapTeams')}
-          >
-            <ArrowLeftRight size={13} />
-          </button>
+          {/* Compact Tools Button Group */}
+          <div className="flex items-center rounded-lg bg-[#121620] p-0.5 border border-[#232b3d] h-8">
+            {/* Swap Blue/Red */}
+            <button
+              onClick={onSwapTeams}
+              className="p-1.5 hover:bg-[#1e2536] text-gray-400 hover:text-white rounded transition-colors cursor-pointer"
+              title={t('swapTeams')}
+            >
+              <ArrowLeftRight size={13} />
+            </button>
 
-          {/* Reset Draft */}
-          <button
-            onClick={onReset}
-            className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title={t('resetDraft')}
-          >
-            <RotateCcw size={13} />
-          </button>
+            {/* Reset Draft */}
+            <button
+              onClick={onReset}
+              className="p-1.5 hover:bg-[#1e2536] text-gray-400 hover:text-white rounded transition-colors cursor-pointer"
+              title={t('resetDraft')}
+            >
+              <RotateCcw size={13} />
+            </button>
 
-          {/* Language Switcher Toggle */}
-          <button
-            onClick={() => setLang(lang === 'ko' ? 'en' : 'ko')}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] hover:border-[#4a72ff] text-xs font-bold text-gray-300 hover:text-white transition-colors cursor-pointer"
-            title={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}
-          >
-            <Languages size={13} className="text-[#4a72ff]" />
-            <span className="font-mono text-[11px]">{lang.toUpperCase()}</span>
-          </button>
+            {/* Language Switcher Toggle */}
+            <button
+              onClick={() => setLang(lang === 'ko' ? 'en' : 'ko')}
+              className="px-2 py-1 hover:bg-[#1e2536] text-xs font-bold text-gray-300 hover:text-white rounded transition-colors cursor-pointer flex items-center gap-1"
+              title={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+            >
+              <Languages size={13} className="text-[#4a72ff]" />
+              <span className="font-mono text-[11px]">{lang.toUpperCase()}</span>
+            </button>
 
-          {/* Settings */}
-          <button
-            onClick={onOpenSettings}
-            className="p-1.5 rounded-lg bg-[#121620] hover:bg-[#1e2536] border border-[#232b3d] text-gray-400 hover:text-white transition-colors cursor-pointer"
-            title={t('settings')}
-          >
-            <Settings size={13} />
-          </button>
+            {/* Settings */}
+            <button
+              onClick={onOpenSettings}
+              className="p-1.5 hover:bg-[#1e2536] text-gray-400 hover:text-white rounded transition-colors cursor-pointer"
+              title={t('settings')}
+            >
+              <Settings size={13} />
+            </button>
+          </div>
         </div>
       </div>
     </header>

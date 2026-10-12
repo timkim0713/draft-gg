@@ -260,7 +260,18 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 space-y-3">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-4 space-y-3">
+        {/* Dedicated Live In-Game Search Section (Top Priority when in Live Mode!) */}
+        {inputMode === 'live' && (
+          <LiveGameSearchCard
+            onSearch={handleSearchLiveGame}
+            isSearching={isSearchingLiveGame}
+            activeLiveGame={activeLiveGame}
+            hasApiKey={Boolean(riotApiKey)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        )}
+
         {/* Live Game Status Banner */}
         {inputMode === 'live' && liveGameNotice && (
           <div
@@ -320,17 +331,6 @@ export function App() {
             {inputMode === 'manual' ? t('manualModeNotice') : t('liveModeNotice')}
           </span>
         </div>
-
-        {/* Dedicated Live In-Game Search Section (High Visibility) */}
-        {inputMode === 'live' && (
-          <LiveGameSearchCard
-            onSearch={handleSearchLiveGame}
-            isSearching={isSearchingLiveGame}
-            activeLiveGame={activeLiveGame}
-            hasApiKey={Boolean(riotApiKey)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-          />
-        )}
 
         {/* 5v5 Draft Pick Section */}
         <section className="bg-[#121620] border border-[#202738] rounded-xl p-3 sm:p-3.5 shadow-lg">
