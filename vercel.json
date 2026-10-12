@@ -11,6 +11,10 @@
       "destination": "/api/ai/analyze"
     },
     {
+      "source": "/(.*)riot.txt",
+      "destination": "/riot.txt"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
