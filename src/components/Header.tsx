@@ -5,7 +5,6 @@ import {
   RotateCcw,
   ArrowLeftRight,
   Settings,
-  HelpCircle,
   Radio,
   Search,
   Loader2,
@@ -46,39 +45,43 @@ export const Header: React.FC<HeaderProps> = ({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      onToggleInputMode('live');
       onSearchLiveGame(searchQuery.trim(), selectedRegion);
     }
   };
 
   const handleQuickSample = (query: string) => {
     setSearchQuery(query);
+    onToggleInputMode('live');
     onSearchLiveGame(query, 'kr');
   };
 
   return (
     <header className="border-b border-[#1d2332] bg-[#0c0f16]/95 backdrop-blur sticky top-0 z-40 px-3 sm:px-4 py-2">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
         {/* Brand & Mode Switcher */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-[#4a72ff] flex items-center justify-center text-white font-extrabold text-sm tracking-wider shadow-sm">
-            GG
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-black text-white tracking-tight">
-                {t('brandTitle')}<span className="text-[#4a72ff]">{t('brandSuffix')}</span>
-              </span>
-              <span className="px-1.5 py-0.2 rounded bg-[#4a72ff]/20 text-[#719df0] border border-[#4a72ff]/40 text-[9px] font-bold font-mono">
-                {t('brandBadge')}
-              </span>
+        <div className="flex items-center gap-3 shrink-0 w-full lg:w-auto justify-between lg:justify-start">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#4a72ff] flex items-center justify-center text-white font-extrabold text-sm tracking-wider shadow-sm">
+              GG
             </div>
-            <p className="text-[10px] text-gray-500">
-              {t('brandSubtitle')}
-            </p>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-black text-white tracking-tight">
+                  {t('brandTitle')}<span className="text-[#4a72ff]">{t('brandSuffix')}</span>
+                </span>
+                <span className="px-1.5 py-0.2 rounded bg-[#4a72ff]/20 text-[#719df0] border border-[#4a72ff]/40 text-[9px] font-bold font-mono">
+                  {t('brandBadge')}
+                </span>
+              </div>
+              <p className="text-[10px] text-gray-500 hidden sm:block">
+                {t('brandSubtitle')}
+              </p>
+            </div>
           </div>
 
           {/* 2 Modes Toggle */}
-          <div className="flex items-center rounded-lg bg-[#121620] p-0.5 border border-[#1f2638] ml-2">
+          <div className="flex items-center rounded-lg bg-[#121620] p-0.5 border border-[#1f2638]">
             <button
               onClick={() => onToggleInputMode('manual')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
@@ -106,62 +109,58 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Live Search Bar (Active in live mode or accessible) */}
-        {inputMode === 'live' ? (
-          <div className="flex items-center gap-2 flex-1 max-w-md w-full animate-in fade-in">
-            <form onSubmit={handleSearchSubmit} className="flex items-center flex-1 relative">
-              <select
-                value={selectedRegion}
-                onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
-                className="absolute left-2 text-[11px] font-bold text-[#719df0] bg-[#121620] focus:outline-none cursor-pointer pr-1 border-r border-[#242c3f] z-10 py-0.5 rounded"
-                title="서버 선택 (Region)"
-              >
-                <option value="kr">KR</option>
-                <option value="na">NA</option>
-                <option value="euw">EUW</option>
-              </select>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder={t('summonerPlaceholder')}
-                className="w-full pl-16 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={isSearchingLiveGame}
-                className="absolute right-1 px-2 py-1 bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                {isSearchingLiveGame ? <Loader2 size={11} className="animate-spin" /> : <Search size={11} />}
-                <span>{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
-              </button>
-            </form>
+        {/* Live Search Bar (Always prominent and centered in the header!) */}
+        <div className="flex items-center gap-2 flex-1 max-w-xl w-full">
+          <form onSubmit={handleSearchSubmit} className="flex items-center flex-1 relative">
+            <select
+              value={selectedRegion}
+              onChange={e => setSelectedRegion(e.target.value as 'kr' | 'na' | 'euw')}
+              className="absolute left-2 text-[11px] font-bold text-[#719df0] bg-[#121620] focus:outline-none cursor-pointer pr-1 border-r border-[#242c3f] z-10 py-0.5 rounded"
+              title="서버 선택 (Region)"
+            >
+              <option value="kr">KR</option>
+              <option value="na">NA</option>
+              <option value="euw">EUW</option>
+            </select>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder={t('summonerPlaceholder')}
+              className="w-full pl-16 pr-20 py-1.5 bg-[#121620] border border-[#232b3d] hover:border-[#3b4763] focus:border-[#4a72ff] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none shadow-inner"
+            />
+            <button
+              type="submit"
+              disabled={isSearchingLiveGame}
+              className="absolute right-1 px-2.5 py-1 bg-[#4a72ff] hover:bg-[#3b62ee] disabled:bg-gray-700 text-white text-[11px] font-bold rounded-md transition-colors flex items-center gap-1 cursor-pointer shadow-sm"
+            >
+              {isSearchingLiveGame ? <Loader2 size={11} className="animate-spin" /> : <Search size={11} />}
+              <span>{isSearchingLiveGame ? t('searching') : t('searchLiveGame')}</span>
+            </button>
+          </form>
 
-            <div className="hidden sm:flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
-              <button
-                type="button"
-                onClick={() => handleQuickSample('Hide on bush#KR1')}
-                className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer"
-              >
-                Faker
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickSample('Chovy#KR1')}
-                className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer"
-              >
-                Chovy
-              </button>
-            </div>
+          <div className="hidden sm:flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleQuickSample('Hide on bush#KR1')}
+              className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer border border-[#1f2638]"
+              title="Faker 라이브 인게임 샘플 로드"
+            >
+              Faker
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickSample('Chovy#KR1')}
+              className="px-1.5 py-0.5 rounded bg-[#161c28] hover:bg-[#202738] text-gray-400 hover:text-white transition-colors cursor-pointer border border-[#1f2638]"
+              title="Chovy 라이브 인게임 샘플 로드"
+            >
+              Chovy
+            </button>
           </div>
-        ) : (
-          <div className="hidden md:flex items-center gap-2 text-xs text-gray-400">
-            <span>{lang === 'ko' ? '슬롯을 클릭하거나 하단 추천 챔피언을 눌러 즉시 픽하세요.' : 'Click slots or click recommended champions below to pick instantly.'}</span>
-          </div>
-        )}
+        </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0 w-full lg:w-auto justify-end">
           {/* AI Analyze Trigger */}
           <button
             onClick={onTriggerAI}
